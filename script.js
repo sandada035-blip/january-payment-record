@@ -1,51 +1,27 @@
-// ប្តូរ URL នេះចេញ!
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwv3j_Bso7fMzmv9bfuEQ23m7Rlq1Xi2ST54ub-gBKWofuIVxYckgYify8V3TAkDtq9/exec"; 
+// ប្តូរ URL នេះជាមួយ URL ដែលបានមកពីការ Deploy Google Apps Script
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxXrI6Mo3rJ2PAxZ-KNBa7ofrZylCoY_iLWG4WUfYNRZw3U18rueBtzdb03MPt9ePG1/exec";
 
 let isEditMode = false;
 let originalName = "";
 let allStudents = [];
 
-// សំខាន់៖ យក URL ថ្មីដែលបានពីការ Deploy មកដាក់នៅទីនេះ
-const WEB_APP_URL = "ដាក់_URL_Web_App_ថ្មី_របស់អ្នកទីនេះ"; 
-
-// ១. ត្រូវប្រាកដថា URL នេះត្រឹមត្រូវ (កុំឱ្យមានដកឃ្លាលើស)
-const WEB_APP_URL = "https://script.google.com/macros/s/XXX_YOUR_ID_HERE_XXX/exec";
-
+// 1. Authentication
 async function login() {
     const u = document.getElementById('username').value.trim();
     const p = document.getElementById('password').value.trim();
     
-    if(!u || !p) {
-        Swal.fire('Warning', 'សូមបញ្ចូល Username និង Password', 'warning');
-        return;
-    }
-
-    Swal.fire({ title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading() });
-
-    // ២. ការហៅ API ត្រូវបញ្ជូន parameter ឱ្យចំឈ្មោះ func
-    const res = await callAPI('checkLogin', u, p);
+    if(!u || !p) return Swal.fire('Warning', 'សូមបញ្ចូល Username និង Password', 'warning');
     
+    Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading()});
+    
+    const res = await callAPI('checkLogin', u, p);
     if(res && res.success) {
-        Swal.fire({ icon: 'success', title: 'ជោគជ័យ', timer: 1000, showConfirmButton: false });
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        showDashboard();
+        showSection('dashboard');
+        Swal.close();
     } else {
-        Swal.fire('បរាជ័យ', res ? res.message : "មិនអាចភ្ជាប់ទៅកាន់ Server បានទេ", 'error');
-    }
-}
-
-async function callAPI(funcName, ...args) {
-    // ៣. បង្កើត URL បញ្ជូន funcName ឱ្យបានត្រឹមត្រូវ
-    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
-    
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Network response was not ok");
-        return await response.json();
-    } catch (error) {
-        console.error("Fetch error:", error);
-        return null;
+        Swal.fire('បរាជ័យ', res ? res.message : "Network Error", 'error');
     }
 }
 
@@ -59,87 +35,71 @@ function showSection(id) {
     if(id === 'students') loadStudents();
 }
 
-// 3. CRUD Operations
-async function loadStudents() {
-    const res = await callAPI('getStudentData');
-    allStudents = res.rows;
-    const body = document.getElementById('studentBody');
-    body.innerHTML = res.rows.map((r, i) => `
-        <tr>
-            <td class="fw-bold text-primary">${r[0]}</td>
-            <td>${r[2]}</td>
-            <td>${r[3]}</td>
-            <td class="text-success">${r[4]}</td>
-            <td>
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-warning" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent(${i})"><i class="bi bi-trash"></i></button>
-                </div>
-            </td>
-        </tr>
-    `).join('');
-}
-
-async function submitStudent() {
-    const form = {
-        studentName: document.getElementById('addStudentName').value,
-        gender: document.getElementById('addGender').value,
-        grade: document.getElementById('addGrade').value,
-        teacherName: document.getElementById('addTeacherSelect').value,
-        schoolFee: document.getElementById('addFee').value + " KHR",
-        teacherFeeVal: (document.getElementById('addFee').value * 0.8).toLocaleString() + " KHR",
-        schoolFeeVal: (document.getElementById('addFee').value * 0.2).toLocaleString() + " KHR",
-        paymentDate: new Date().toISOString().split('T')[0],
-        startDate: new Date().toISOString().split('T')[0]
-    };
-
-    Swal.fire({title: 'Processing...', didOpen: () => Swal.showLoading()});
-    
-    const action = isEditMode ? 'updateStudentData' : 'saveStudentToTeacherSheet';
-    const params = isEditMode ? [originalName, form] : [form];
-    
-    const res = await callAPI(action, ...params);
-    if(res.success) {
-        Swal.fire('Success', res.message, 'success');
-        bootstrap.Modal.getInstance(document.getElementById('studentModal')).hide();
-        loadStudents();
-    }
-}
-
-async function deleteStudent(index) {
-    const student = allStudents[index];
-    const confirm = await Swal.fire({
-        title: 'តើអ្នកប្រាកដទេ?',
-        text: `លុបទិន្នន័យសិស្ស ${student[0]}`,
-        icon: 'warning',
-        showCancelButton: true
-    });
-
-    if(confirm.isConfirmed) {
-        const res = await callAPI('deleteStudentData', student[0], student[3]);
-        if(res.success) {
-            Swal.fire('Deleted', res.message, 'success');
-            loadStudents();
-        }
-    }
-}
-
-// 4. API Core (ប្រើ JSONP ឬ CORS)
+// 3. API Core
 async function callAPI(func, ...args) {
     const url = `${WEB_APP_URL}?func=${func}&args=${encodeURIComponent(JSON.stringify(args))}`;
     try {
         const response = await fetch(url);
         return await response.json();
     } catch (e) {
-        return {success: false, message: "API Error"};
+        console.error(e);
+        return null;
     }
 }
 
-// Modal Helpers
+// 4. Data Loading
+async function loadDashboard() {
+    const res = await callAPI('getTeacherData');
+    if(!res) return;
+    
+    // Render Stats Row
+    let studentCount = 0, totalFee = 0;
+    res.rows.forEach(r => {
+        studentCount += parseInt(r[2]) || 0;
+        totalFee += parseInt(r[3].replace(/[^0-9]/g, '')) || 0;
+    });
+
+    document.getElementById('statsRow').innerHTML = `
+        <div class="col-6 col-md-3"><div class="stat-card"><small class="text-muted">គ្រូសរុប</small><div class="h4 mb-0">${res.rows.length}</div></div></div>
+        <div class="col-6 col-md-3"><div class="stat-card" style="border-color:#10b981"><small class="text-muted">សិស្សសរុប</small><div class="h4 mb-0">${studentCount}</div></div></div>
+        <div class="col-12 col-md-6"><div class="stat-card" style="border-color:#f59e0b"><small class="text-muted">ចំណូលសរុប</small><div class="h4 mb-0 text-success">${totalFee.toLocaleString()} ៛</div></div></div>
+    `;
+
+    document.getElementById('teacherBody').innerHTML = res.rows.map(r => `
+        <tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>
+    `).join('');
+}
+
+async function loadStudents() {
+    document.getElementById('studentLoading').classList.remove('d-none');
+    const res = await callAPI('getStudentData');
+    document.getElementById('studentLoading').classList.add('d-none');
+    if(!res) return;
+    
+    allStudents = res.rows;
+    document.getElementById('studentBody').innerHTML = res.rows.map((r, i) => `
+        <tr>
+            <td class="fw-bold text-primary">${r[0]}</td>
+            <td>${r[1]}</td>
+            <td>${r[2]}</td>
+            <td>${r[3]}</td>
+            <td class="text-success">${r[4]}</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-warning" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(${i})"><i class="bi bi-trash"></i></button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// 5. CRUD Operations
 function openStudentModal() {
     isEditMode = false;
     document.getElementById('modalTitle').innerText = "បញ្ចូលសិស្សថ្មី";
     document.getElementById('addStudentName').value = "";
+    document.getElementById('addFee').value = "";
     new bootstrap.Modal(document.getElementById('studentModal')).show();
 }
 
@@ -149,11 +109,59 @@ function editStudent(index) {
     originalName = r[0];
     document.getElementById('modalTitle').innerText = "កែប្រែព័ត៌មាន";
     document.getElementById('addStudentName').value = r[0];
+    document.getElementById('addGender').value = r[1];
+    document.getElementById('addGrade').value = r[2];
+    document.getElementById('addTeacherSelect').value = r[3];
     document.getElementById('addFee').value = r[4].replace(/[^0-9]/g, '');
     new bootstrap.Modal(document.getElementById('studentModal')).show();
 }
 
-function calcAddFees() {
-    let f = document.getElementById('addFee').value || 0;
-    // Update labels if needed
+async function submitStudent() {
+    const name = document.getElementById('addStudentName').value;
+    const teacher = document.getElementById('addTeacherSelect').value;
+    if(!name || !teacher) return Swal.fire('Error', 'សូមបំពេញព័ត៌មាន', 'error');
+    
+    const fee = document.getElementById('addFee').value || 0;
+    const form = {
+        studentName: name, gender: document.getElementById('addGender').value,
+        grade: document.getElementById('addGrade').value, teacherName: teacher,
+        schoolFee: parseInt(fee).toLocaleString() + " KHR",
+        teacherFeeVal: (fee * 0.8).toLocaleString() + " KHR",
+        schoolFeeVal: (fee * 0.2).toLocaleString() + " KHR",
+        paymentDate: new Date().toISOString().split('T')[0],
+        startDate: new Date().toISOString().split('T')[0]
+    };
+
+    Swal.fire({title: 'កំពុងដំណើរការ...', didOpen: () => Swal.showLoading()});
+    
+    const action = isEditMode ? 'updateStudentData' : 'saveStudentToTeacherSheet';
+    const params = isEditMode ? [originalName, form] : [form];
+    
+    const res = await callAPI(action, ...params);
+    if(res && res.success) {
+        Swal.fire('ជោគជ័យ', res.message, 'success');
+        bootstrap.Modal.getInstance(document.getElementById('studentModal')).hide();
+        loadStudents();
+    }
+}
+
+function confirmDelete(index) {
+    const name = allStudents[index][0];
+    const teacher = allStudents[index][3];
+    Swal.fire({
+        title: 'លុបទិន្នន័យ?',
+        text: `តើអ្នកចង់លុបសិស្ស ${name}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'បាទ លុបវា!'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            const res = await callAPI('deleteStudentData', name, teacher);
+            if(res && res.success) {
+                Swal.fire('Deleted!', res.message, 'success');
+                loadStudents();
+            }
+        }
+    });
 }
