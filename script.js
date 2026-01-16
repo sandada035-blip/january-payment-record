@@ -1,4 +1,4 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwPyx0d-qqXUEcyPcjIFR5CgzMSSB6l-gOJ1IshoK56mn5vXx-2JQe08xdC4XqUWpZB/exec"; 
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz9swnasTL7EdXnLgZuS5l2n8KACzzQkPr4G5nlb4o-1N5_JxF2fW9POQkBbQlUvPUo/exec"; 
 let userRole = "User", allStudents = [], isEditMode = false, originalName = "";
 
 async function callAPI(func, ...args) {
@@ -12,8 +12,11 @@ async function callAPI(func, ...args) {
 async function login() {
   const u = document.getElementById('username').value;
   const p = document.getElementById('password').value;
-  Swal.fire({title: 'កំពុងចូល...', didOpen: () => Swal.showLoading()});
+  if(!u || !p) return Swal.fire('Error', 'សូមបំពេញព័ត៌មាន', 'error');
+
+  Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading()});
   const res = await callAPI('checkLogin', u, p);
+  
   if (res && res.success) {
     userRole = res.role;
     document.getElementById('loginSection').style.display = 'none';
@@ -21,11 +24,12 @@ async function login() {
     applyPermissions();
     showSection('dashboard');
     Swal.close();
-  } else { Swal.fire('Error', 'ឈ្មោះ ឬលេខសម្ងាត់ខុស', 'error'); }
+  } else { Swal.fire('បរាជ័យ', 'គណនីមិនត្រឹមត្រូវ', 'error'); }
 }
 
 function applyPermissions() {
-  document.querySelectorAll('.admin-only').forEach(el => el.style.display = userRole === 'Admin' ? 'block' : 'none');
+  const isAdmin = (userRole === 'Admin');
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? 'block' : 'none');
 }
 
 function showSection(id) {
@@ -37,29 +41,43 @@ function showSection(id) {
 
 async function loadDashboard() {
   const res = await callAPI('getDashboardStats');
-  if(res.success) {
+  if(res && res.success) {
+    // បង្ហាញលេខលើ Dashboard Card ដូចក្នុងរូបភាពរបស់អ្នក
     document.getElementById('statsRow').innerHTML = `
-      <div class="col-6"><div class="stat-card"><h6>សិស្សសរុប</h6><h4>${res.data.totalStudents}</h4></div></div>
-      <div class="col-6"><div class="stat-card"><h6>ចំណូលសរុប</h6><h4>${res.data.totalIncome}</h4></div></div>
+      <div class="col-md-6 col-12">
+        <div class="stat-card p-3 mb-2">
+          <small class="text-muted">សិស្សសរុប</small>
+          <h2 class="fw-bold">${res.data.totalStudents}</h2>
+        </div>
+      </div>
+      <div class="col-md-6 col-12">
+        <div class="stat-card p-3 mb-2" style="border-left-color: #4361ee;">
+          <small class="text-muted">ចំណូលសរុប</small>
+          <h2 class="fw-bold">${res.data.totalIncome}</h2>
+        </div>
+      </div>
     `;
   }
 }
 
 async function loadStudents() {
   const res = await callAPI('getStudents');
-  if(res.success) {
+  if(res && res.success) {
     allStudents = res.data;
-    document.getElementById('studentBody').innerHTML = res.data.map((r, i) => `
-      <tr>
-        <td><b>${r[0]}</b><br><small>${r[3]}</small></td>
-        <td class="text-success">${r[4]}</td>
-        <td>
-          <button class="btn btn-sm btn-info" onclick="printReceipt(${i})"><i class="bi bi-printer"></i></button>
-          ${userRole==='Admin' ? `<button class="btn btn-sm btn-warning" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>` : ''}
+    const body = document.getElementById('studentBody');
+    body.innerHTML = res.data.map((r, i) => `
+      <tr class="align-middle">
+        <td><div class="fw-bold text-primary">${r[0]}</div><small class="text-muted">${r[3]}</small></td>
+        <td class="text-end text-success fw-bold">${r[4]}</td>
+        <td class="text-end">
+          <button class="btn btn-sm btn-light text-info" onclick="printReceipt(${i})"><i class="bi bi-printer"></i></button>
+          ${userRole === 'Admin' ? `<button class="btn btn-sm btn-light text-warning" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>` : ''}
         </td>
-      </tr>`).join('');
+      </tr>
+    `).join('');
   }
 }
+// ... មុខងារផ្សេងៗ (Submit, Edit, Print) ទុកដូចកូដមុន ...
 
 async function submitStudent() {
   const form = {
