@@ -1,39 +1,37 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby1PGMypXbzYlSvVrvtdSBEzFWtxNdZdr6qsjJzUr-U00yEZ1PvUyJ3SyLdOP29ajCt/exec"; 
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxl7pljVnrOXPZYUAf2ZBUtjpi9b0YO3xwJAJcmsM8kU8kecj5Akwsk7G2JPmLnmA2U/exec"; 
 let userRole = "User"; 
 let allStudents = [];
 
 // មុខងារ Login និងបែងចែកសិទ្ធិ
-async function login() {
-    const u = document.getElementById('username').value.trim();
-    const p = document.getElementById('password').value.trim();
-    if(!u || !p) return Swal.fire('Error', 'សូមបញ្ចូលទិន្នន័យ', 'error');
-    
-    Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading()});
-    const res = await callAPI('checkLogin', u, p);
-    
-    if(res && res.success) {
-        userRole = res.role; 
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'block';
-        
-        // លាក់មុខងារ Admin សម្រាប់ User ធម្មតា
-        document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.setProperty('display', userRole === 'Admin' ? 'block' : 'none', 'important');
-        });
-        
-        showSection('dashboard');
-        Swal.close();
-    } else {
-        Swal.fire('បរាជ័យ', 'Username ឬ Password មិនត្រឹមត្រូវ', 'error');
-    }
+const WEB_APP_URL = "ដាក់_URL_WEB_APP_ថ្មី_របស់អ្នកទីនេះ";
+
+async function callAPI(funcName, ...args) {
+  // បង្កើត URL បញ្ជូន funcName និង args ឱ្យបានត្រឹមត្រូវ
+  const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("ការតភ្ជាប់មានបញ្ហា");
+    return await response.json();
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return null;
+  }
 }
 
-async function callAPI(func, ...args) {
-    const url = `${WEB_APP_URL}?func=${func}&args=${encodeURIComponent(JSON.stringify(args))}`;
-    try {
-        const response = await fetch(url);
-        return await response.json();
-    } catch (e) { return null; }
+// របៀបប្រើក្នុង function login
+async function login() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+  
+  // បញ្ជូន u និង p ជា arguments ទៅកាន់ checkLogin
+  const res = await callAPI('checkLogin', u, p);
+  
+  if(res && res.success) {
+    // ចូលទៅកាន់ Dashboard
+  } else {
+    // បង្ហាញ Error
+  }
 }
 
 // បង្ហាញតារាងសិស្សជាមួយប៊ូតុង Action តាម Role
