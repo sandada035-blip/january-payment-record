@@ -1,120 +1,73 @@
-// ១. ត្រូវប្រាកដថា URL នេះត្រឹមត្រូវតាម Deployment ចុងក្រោយរបស់អ្នក
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEKLCjJedtyhDoqOECpZmVaescjzaR2UAhGu79wtyJ8WFJ6Fs2rSRZ92gKyZ6rS8er/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzieaZjLwM8uf4DNbk5LWBAxMtngnZaJ5puV5qsW4F1S2Xb6586I-X5Y5-R0kpu_4-U/exec"; // ដាក់ URL របស់អ្នក
+let userRole = "User", allStudents = [];
 
-let isEditMode = false;
-let originalName = "";
-let allStudents = [];
-let currentUserRole = "User"; // កំណត់ Role លំនាំដើម
-
-// 1. Authentication
 async function login() {
-    const u = document.getElementById('username').value.trim();
-    const p = document.getElementById('password').value.trim();
-    
-    if(!u || !p) return Swal.fire('Warning', 'សូមបញ្ចូល Username និង Password', 'warning');
-    
-    Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading()});
-    
-    const res = await callAPI('checkLogin', u, p); // បញ្ជូន u, p ជា args ផ្ទាល់
-    
-    if(res && res.success) {
-        currentUserRole = res.role; // រក្សាទុក Role ដែលបានមកពី Database (Admin ឬ User)
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'block';
-        
-        // អនុវត្តសិទ្ធិ៖ បើមិនមែន Admin ទេ ត្រូវលាក់ប៊ូតុងបន្ថែមសិស្ស
-        applyPermissions();
-        
-        showSection('dashboard');
-        Swal.close();
-    } else {
-        Swal.fire('បរាជ័យ', res ? res.message : "Network Error", 'error');
-    }
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+  if(!u || !p) return Swal.fire('Error', 'បញ្ចូលទិន្នន័យ', 'error');
+  
+  Swal.fire({title: 'ផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading()});
+  const res = await callAPI('checkLogin', u, p);
+  
+  if(res && res.success) {
+    userRole = res.role;
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    applyPermissions();
+    showSection('dashboard');
+    Swal.close();
+  } else { Swal.fire('បរាជ័យ', 'ខុសគណនី', 'error'); }
 }
 
-// មុខងារកំណត់សិទ្ធិមើលឃើញ (Permissions)
 function applyPermissions() {
-    const adminElements = document.querySelectorAll('.admin-only');
-    adminElements.forEach(el => {
-        // បើជា Admin ឱ្យបង្ហាញ បើ User ឱ្យលាក់ដាច់ខាត
-        el.style.setProperty('display', currentUserRole === 'Admin' ? 'flex' : 'none', 'important');
-    });
+  const adminElems = document.querySelectorAll('.admin-only');
+  adminElems.forEach(el => el.style.setProperty('display', userRole === 'Admin' ? 'flex' : 'none', 'important'));
 }
 
-function logout() { location.reload(); }
+async function callAPI(func, ...args) {
+  const url = `${WEB_APP_URL}?func=${func}&args=${encodeURIComponent(JSON.stringify(args))}`;
+  try {
+    const response = await fetch(url);
+    return await response.json();
+  } catch (e) { return null; }
+}
 
-// 2. Navigation
 function showSection(id) {
-    document.getElementById('dashboardSection').style.display = id === 'dashboard' ? 'block' : 'none';
-    document.getElementById('studentSection').style.display = id === 'students' ? 'block' : 'none';
-    if(id === 'dashboard') loadDashboard();
-    if(id === 'students') loadStudents();
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  document.getElementById(id + 'Section').style.display = 'block';
+  if(id === 'report') loadDailyReport();
+  else if(id === 'students') loadStudents();
 }
 
-// 3. API Core (កែសម្រួលឱ្យបញ្ជូន args បានត្រឹមត្រូវ)
-async function callAPI(funcName, ...args) {
-    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
-    try {
-        const response = await fetch(url);
-        return await response.json();
-    } catch (error) {
-        console.error("API Error:", error);
-        return null;
-    }
+async function loadDailyReport() {
+  const res = await callAPI('getDailyReportData');
+  const rows = res.data;
+  document.getElementById('reportHead').innerHTML = rows[0].map(h => `<th>${h}</th>`).join('');
+  document.getElementById('reportBody').innerHTML = rows.slice(1).map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('');
 }
 
-// 4. Data Loading
-async function loadDashboard() {
-    const res = await callAPI('getTeacherData');
-    if(!res) return;
-    
-    let studentCount = 0, totalFee = 0;
-    res.rows.forEach(r => {
-        studentCount += parseInt(r[2]) || 0;
-        totalFee += parseInt(r[3].toString().replace(/[^0-9]/g, '')) || 0;
-    });
-
-    document.getElementById('statsRow').innerHTML = `
-        <div class="col-6 col-md-3"><div class="stat-card"><small class="text-muted">គ្រូសរុប</small><div class="h4 mb-0">${res.rows.length}</div></div></div>
-        <div class="col-6 col-md-3"><div class="stat-card" style="border-color:#10b981"><small class="text-muted">សិស្សសរុប</small><div class="h4 mb-0">${studentCount}</div></div></div>
-        <div class="col-12 col-md-6"><div class="stat-card" style="border-color:#f59e0b"><small class="text-muted">ចំណូលសរុប</small><div class="h4 mb-0 text-success">${totalFee.toLocaleString()} ៛</div></div></div>
-    `;
-
-    document.getElementById('teacherBody').innerHTML = res.rows.map(r => `
-        <tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>
-    `).join('');
+function printReport() {
+  const content = document.getElementById('printableArea').innerHTML;
+  const win = window.open('', '', 'height=700,width=900');
+  win.document.write('<html><head><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"><style>body{font-family:"Noto Serif Khmer", serif; padding:20px;}</style></head><body>');
+  win.document.write('<h4 class="text-center mb-4">របាយការណ៍បង់ប្រាក់</h4>' + content + '</body></html>');
+  setTimeout(() => { win.print(); win.close(); }, 500);
 }
 
-async function loadStudents() {
-    document.getElementById('studentLoading')?.classList.remove('d-none');
-    const res = await callAPI('getStudentData');
-    document.getElementById('studentLoading')?.classList.add('d-none');
-    if(!res) return;
-    
-    allStudents = res.rows;
-    renderStudentTable(res.rows);
-}
-
-// 5. Render Table with Permission Logic
 function renderStudentTable(rows) {
-    document.getElementById('studentBody').innerHTML = rows.map((r, i) => `
-        <tr>
-            <td class="fw-bold text-primary">${r[0]}</td>
-            <td class="d-none d-md-table-cell">${r[1]}</td>
-            <td class="d-none d-md-table-cell">${r[2]}</td>
-            <td>${r[3]}</td>
-            <td class="text-success small">${r[4]}</td>
-            <td>
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-info" onclick="printReceipt(${i})"><i class="bi bi-printer"></i></button>
-                    ${currentUserRole === 'Admin' ? `
-                        <button class="btn btn-sm btn-outline-warning" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(${i})"><i class="bi bi-trash"></i></button>
-                    ` : ''}
-                </div>
-            </td>
-        </tr>
-    `).join('');
+  allStudents = rows;
+  document.getElementById('studentBody').innerHTML = rows.map((r, i) => `
+    <tr>
+      <td><div class="fw-bold text-primary">${r[0]}</div><div class="small text-muted">${r[3]}</div></td>
+      <td class="text-end text-success small">${r[4]}</td>
+      <td class="text-end">
+        <div class="btn-group btn-group-xs">
+          <button class="btn btn-outline-info btn-xs" onclick="printReceipt(${i})"><i class="bi bi-printer"></i></button>
+          ${userRole === 'Admin' ? `<button class="btn btn-outline-warning btn-xs" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
 }
 
 // 6. CRUD Operations
@@ -237,3 +190,6 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
+
+
