@@ -1,4 +1,4 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby5ALOHK40Ob74spqDvCpMwOo-U0bOjcN-5dJQemc_XEaMg2J-ktqQyvTzvkdEssxXo/exec"; // ដាក់ URL របស់អ្នក
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwGifYYMra0rDUzzRt6LGtCimU_toF7qbEPZUdyMgjleFC1btyL8LocsFFennFQMF1i/exec"; // ដាក់ URL របស់អ្នក
 let userRole = "User", allStudents = [];
 
 async function login() {
@@ -245,3 +245,4 @@ function printDailyReport() {
     win.document.write('</head><body><h3 class="text-center mb-4">របាយការណ៍បង់ប្រាក់ប្រចាំថ្ងៃ</h3>' + content + '</body></html>');
     setTimeout(() => { win.print(); win.close(); }, 500);
 }
+
