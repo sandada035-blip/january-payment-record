@@ -1,5 +1,5 @@
 // ប្តូរ URL នេះចេញ!
-const WEB_APP_URL = "1pGS_PAXGgx_I7em0xqVyf-Cj1Yitv3qEviBvYRFCr7_ULwnH3h8WKxfx"; 
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwAoE0DzVFVwk2D8DQaLsM6SS0uQmkjK2-es-R7b_fxACdvXZfAPZcQcm1ObSz5o17X/exec"; 
 
 let isEditMode = false;
 let originalName = "";
