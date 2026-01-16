@@ -14,13 +14,13 @@
 <body>
 
 <div id="loginSection" class="login-wrapper">
-  <div class="login-card">
+  <div class="login-card shadow-lg">
     <div class="login-icon-box"><i class="bi bi-mortarboard-fill"></i></div>
     <h3 class="fw-bold mb-1">PREAH REACH AKK MOHESSEY</h3>
     <p class="text-muted mb-4 small">Dashboard Access</p>
     <div class="form-floating mb-3"><input type="text" id="username" class="form-control" placeholder="User"><label>Username</label></div>
     <div class="form-floating mb-4"><input type="password" id="password" class="form-control" placeholder="Pass"><label>Password</label></div>
-    <button class="btn btn-primary w-100 btn-login" onclick="login()">LOGIN</button>
+    <button class="btn btn-primary w-100 btn-login py-3" onclick="login()">LOGIN</button>
   </div>
 </div>
 
@@ -37,8 +37,10 @@
   <div id="dashboardSection" class="container-fluid p-3 section">
     <div class="row g-2" id="statsRow"></div>
     <div class="content-box mt-3">
-      <div class="p-3 border-bottom bg-light"><h6 class="fw-bold m-0">Teacher Summary</h6></div>
-      <div class="table-responsive"><table class="table table-hover mb-0" id="teacherTable"><thead></thead><tbody></tbody></table></div>
+      <div class="p-3 border-bottom bg-light d-flex justify-content-between">
+        <h6 class="fw-bold m-0">Teacher Summary</h6>
+      </div>
+      <div class="table-responsive"><table class="table table-hover mb-0" id="teacherTable"><thead></thead><tbody id="teacherBody"></tbody></table></div>
     </div>
   </div>
 
@@ -46,27 +48,27 @@
     <div class="content-box">
       <div class="p-3 border-bottom">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="fw-bold m-0">បញ្ជីឈ្មោះសិស្ស</h6>
-          <div class="admin-only d-flex gap-1" style="display:none !important;">
+          <h6 class="fw-bold m-0">Student Records</h6>
+          <div class="d-flex gap-1 admin-only">
             <button class="btn btn-success btn-sm" onclick="exportToExcel()"><i class="bi bi-file-earmark-excel"></i></button>
             <button class="btn btn-primary btn-sm" onclick="openStudentModal()">+ Add</button>
           </div>
         </div>
         <div class="input-group input-group-sm">
           <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-          <input type="text" id="studentSearch" class="form-control border-start-0" placeholder="ស្វែងរក..." onkeyup="filterStudents()">
+          <input type="text" id="studentSearch" class="form-control border-start-0" placeholder="ស្វែងរកឈ្មោះសិស្ស..." onkeyup="filterStudents()">
         </div>
       </div>
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0" id="studentTableMain">
-          <thead class="table-light"><tr><th>ឈ្មោះ</th><th class="d-none d-md-table-cell">ថ្នាក់</th><th>គ្រូ</th><th>តម្លៃ</th><th class="text-center">Action</th></tr></thead>
+          <thead class="table-light"><tr><th>ឈ្មោះ</th><th>គ្រូ</th><th>តម្លៃ</th><th class="text-center">Action</th></tr></thead>
           <tbody id="studentBody"></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <button id="fabBtn" class="fab-btn admin-only" onclick="openStudentModal()" style="display:none;"><i class="bi bi-plus-lg"></i></button>
+  <button id="fabBtn" class="fab-btn admin-only shadow" onclick="openStudentModal()"><i class="bi bi-plus-lg"></i></button>
 </div>
 
 <div class="modal fade" id="studentModal" tabindex="-1">
@@ -75,14 +77,14 @@
       <div class="modal-header border-0 pb-0"><h5 class="fw-bold" id="modalTitle">បញ្ចូលសិស្ស</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <div class="modal-body p-4">
         <input type="hidden" id="editOriginalName">
-        <div class="form-floating mb-3"><input type="text" id="addStudentName" class="form-control"><label>ឈ្មោះសិស្ស</label></div>
+        <div class="form-floating mb-3"><input type="text" id="addStudentName" class="form-control" placeholder="Name"><label>ឈ្មោះសិស្ស</label></div>
         <div class="row g-2 mb-3">
           <div class="col-6"><div class="form-floating"><select id="addGender" class="form-select"><option value="Male">ប្រុស</option><option value="Female">ស្រី</option></select><label>ភេទ</label></div></div>
-          <div class="col-6"><div class="form-floating"><input type="text" id="addGrade" class="form-control"><label>ថ្នាក់</label></div></div>
+          <div class="col-6"><div class="form-floating"><input type="text" id="addGrade" class="form-control" placeholder="Grade"><label>ថ្នាក់</label></div></div>
         </div>
         <div class="form-floating mb-3"><select id="addTeacherSelect" class="form-select"><option value="កែមលៀងគា">កែមលៀងគា</option><option value="ប្រាក់ប្រសើ">ប្រាក់ប្រសើ</option></select><label>គ្រូ</label></div>
-        <div class="form-floating mb-3"><input type="number" id="addFee" class="form-control"><label>តម្លៃសិក្សា</label></div>
-        <button class="btn btn-primary w-100 py-3 fw-bold" onclick="submitStudent()">រក្សាទុក</button>
+        <div class="form-floating mb-3"><input type="number" id="addFee" class="form-control" oninput="calcAddFees()"><label>តម្លៃសិក្សា</label></div>
+        <button class="btn btn-primary w-100 py-3 fw-bold rounded-3" onclick="submitStudent()">រក្សាទុក</button>
       </div>
     </div>
   </div>
