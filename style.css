@@ -9,3 +9,22 @@ body { background-color: var(--bg-body); font-family: 'Inter', sans-serif; }
 .fab-btn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; border: none; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4); z-index: 1000; }
 .fw-bold, .form-select, .form-control, table, h6 { font-family: var(--font-khmer); }
 @media (max-width: 576px) { .app-navbar h6 { font-size: 0.9rem; } }
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+    .table { font-size: 11px; }
+    .btn-group .btn { padding: 3px 6px; font-size: 10px; }
+    .stat-card .h4 { font-size: 1rem; }
+    .container-fluid { padding-left: 8px; padding-right: 8px; }
+    .app-navbar h5 { font-size: 1rem; }
+}
+
+/* Receipt Print Button Styling */
+.btn-outline-info {
+    color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+.btn-outline-info:hover {
+    background-color: #0dcaf0;
+    color: white;
+}
