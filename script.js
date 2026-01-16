@@ -1,4 +1,4 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyu8ezQJLprjgJD62pcFCjjan3Y-z86DCad7SEvdPyDi69GiEKAm4LH0rjv1ykuQ2aI/exec"; // ដាក់ URL របស់អ្នក
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdeo8s4UuomVyGSkqNSygNhjWY6obCoHrsoOaJ1nqIB6T-dJXHzk3U4Ufhx2qYzLzq/exec"; // ដាក់ URL របស់អ្នក
 let userRole = "User", allStudents = [];
 
 async function login() {
@@ -24,18 +24,20 @@ function applyPermissions() {
   adminElems.forEach(el => el.style.setProperty('display', userRole === 'Admin' ? 'flex' : 'none', 'important'));
 }
 
+// ប្តូរ URL នេះជាមួយ URL ដែលបានមកពីការ Deploy ថ្មីរបស់អ្នក
+
 async function callAPI(funcName, ...args) {
-    // ត្រូវប្រាកដថា WEB_APP_URL របស់អ្នកបញ្ចប់ដោយ /exec
-    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
-    
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Network response was not ok");
-        return await response.json();
-    } catch (error) {
-        console.error("Fetch error:", error);
-        return null;
-    }
+  // បង្កើត URL ដែលរួមមាន func និង args ជា JSON string
+  const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Network response was not ok");
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    return { success: false, message: "ការតភ្ជាប់មានបញ្ហា" };
+  }
 }
 
 function showSection(id) {
