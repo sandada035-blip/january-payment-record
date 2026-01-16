@@ -165,3 +165,87 @@ function confirmDelete(index) {
         }
     });
 }
+
+
+// --- ១. មុខងារស្វែងរកសិស្ស (Search Filter) ---
+function filterStudents() {
+    const input = document.getElementById('studentSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#studentBody tr');
+    
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? '' : 'none';
+    });
+}
+
+// --- ២. មុខងារទាញយកទិន្នន័យជា Excel (Export to Excel) ---
+function exportToExcel() {
+    const table = document.getElementById("studentTableMain");
+    // បង្កើត Workbook ថ្មី
+    const wb = XLSX.utils.table_to_book(table, {sheet: "StudentList"});
+    // ទាញយក File
+    XLSX.writeFile(wb, "Student_Report_" + new Date().toLocaleDateString() + ".xlsx");
+}
+
+// --- ៣. មុខងារបោះពុម្ពវិក្កយបត្រ (Print Receipt) ---
+// បន្ថែមប៊ូតុងនេះទៅក្នុងជួរ Action នៃ renderStudentTable
+function renderStudentTable(rows) {
+    allStudents = rows;
+    document.getElementById('studentBody').innerHTML = rows.map((r, i) => `
+        <tr>
+            <td class="fw-bold text-primary">${r[0]}</td>
+            <td>${r[1]}</td>
+            <td>${r[2]}</td>
+            <td>${r[3]}</td>
+            <td class="text-success">${r[4]}</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-info" onclick="printReceipt(${i})"><i class="bi bi-printer"></i></button>
+                    <button class="btn btn-sm btn-outline-warning" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(${i})"><i class="bi bi-trash"></i></button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function printReceipt(index) {
+    const s = allStudents[index];
+    const printWindow = window.open('', '', 'height=600,width=800');
+    
+    const receiptHTML = `
+        <html>
+        <head>
+            <title>Receipt - ${s[0]}</title>
+            <style>
+                body { font-family: 'Khmer OS', sans-serif; padding: 20px; text-align: center; }
+                .receipt-box { border: 2px solid #333; padding: 20px; width: 400px; margin: auto; }
+                .header { font-weight: bold; font-size: 18px; }
+                .line { border-bottom: 1px dashed #ccc; margin: 10px 0; }
+                .details { text-align: left; }
+                .footer { margin-top: 20px; font-size: 12px; }
+            </style>
+        </head>
+        <body>
+            <div class="receipt-box">
+                <div class="header">វិក្កយបត្របង់ប្រាក់</div>
+                <div>សាលារៀន អគ្គមហេសី</div>
+                <div class="line"></div>
+                <div class="details">
+                    <p>ឈ្មោះសិស្ស: <b>${s[0]}</b></p>
+                    <p>ថ្នាក់: <b>${s[2]}</b></p>
+                    <p>រៀនជាមួយគ្រូ: <b>${s[3]}</b></p>
+                    <p>តម្លៃសិក្សា: <b style="color: green;">${s[4]}</b></p>
+                    <p>ថ្ងៃខែបង់: <b>${new Date().toLocaleDateString()}</b></p>
+                </div>
+                <div class="line"></div>
+                <div class="footer">អរគុណសម្រាប់ការបង់ប្រាក់!</div>
+            </div>
+            <script>window.onload = function() { window.print(); window.close(); }</script>
+        </body>
+        </html>
+    `;
+    
+    printWindow.document.write(receiptHTML);
+    printWindow.document.close();
+}
