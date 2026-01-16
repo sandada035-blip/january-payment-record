@@ -1,4 +1,4 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzieaZjLwM8uf4DNbk5LWBAxMtngnZaJ5puV5qsW4F1S2Xb6586I-X5Y5-R0kpu_4-U/exec"; // ដាក់ URL របស់អ្នក
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby5ALOHK40Ob74spqDvCpMwOo-U0bOjcN-5dJQemc_XEaMg2J-ktqQyvTzvkdEssxXo/exec"; // ដាក់ URL របស់អ្នក
 let userRole = "User", allStudents = [];
 
 async function login() {
@@ -193,3 +193,55 @@ function printReceipt(index) {
 
 
 
+// ១. មុខងារបោះពុម្ពវិក្កយបត្រ (Print Student Receipt)
+function printReceipt(index) {
+    const s = allStudents[index]; // s[0]=Name, s[2]=Grade, s[3]=Teacher, s[4]=Fee
+    const printWindow = window.open('', '', 'height=600,width=400');
+    
+    const receiptHTML = `
+        <html>
+        <head>
+            <title>វិក្កយបត្រ - ${s[0]}</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Khmer:wght@400;700&display=swap');
+                body { font-family: 'Noto Serif Khmer', serif; padding: 10px; text-align: center; font-size: 14px; }
+                .receipt-box { border: 1px solid #000; padding: 15px; border-radius: 5px; }
+                .header { font-weight: bold; font-size: 18px; margin-bottom: 5px; color: #4361ee; }
+                .line { border-bottom: 1px dashed #333; margin: 10px 0; }
+                .details { text-align: left; line-height: 1.8; }
+                .footer { margin-top: 15px; font-size: 12px; font-style: italic; }
+            </style>
+        </head>
+        <body>
+            <div class="receipt-box">
+                <div class="header">វិក្កយបត្របង់ប្រាក់</div>
+                <div style="font-weight:bold">សាលារៀន អគ្គមហេសី</div>
+                <div class="line"></div>
+                <div class="details">
+                    ឈ្មោះសិស្ស: <b>${s[0]}</b><br>
+                    ថ្នាក់: <b>${s[2]}</b><br>
+                    គ្រូបង្គោល: <b>${s[3]}</b><br>
+                    តម្លៃសិក្សា: <b style="color: #28a745;">${s[4]}</b><br>
+                    ថ្ងៃខែបង់: <b>${new Date().toLocaleDateString('km-KH')}</b>
+                </div>
+                <div class="line"></div>
+                <div class="footer">អរគុណសម្រាប់ការបង់ប្រាក់!</div>
+            </div>
+            <script>window.onload = function() { window.print(); window.close(); }</script>
+        </body>
+        </html>
+    `;
+    printWindow.document.write(receiptHTML);
+    printWindow.document.close();
+}
+
+// ២. មុខងារបោះពុម្ពរបាយការណ៍ប្រចាំថ្ងៃ (Print Daily Report)
+function printDailyReport() {
+    const content = document.getElementById('printableArea').innerHTML;
+    const win = window.open('', '', 'height=700,width=900');
+    win.document.write('<html><head><title>Daily Report</title>');
+    win.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">');
+    win.document.write('<style>@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+Khmer:wght@400;700&display=swap"); body{font-family:"Noto Serif Khmer", serif; padding:30px;}</style>');
+    win.document.write('</head><body><h3 class="text-center mb-4">របាយការណ៍បង់ប្រាក់ប្រចាំថ្ងៃ</h3>' + content + '</body></html>');
+    setTimeout(() => { win.print(); win.close(); }, 500);
+}
