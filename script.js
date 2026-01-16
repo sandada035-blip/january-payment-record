@@ -1,5 +1,5 @@
 const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbzPX4ig4vnntSL9t62z-1OZ3c8CuhTe07nb7w-n6QLI6OWsM9PdErIoTq6yCrxtgDic/exec";
+"https://script.google.com/macros/s/AKfycbxkz2jkoLj1RcRVeN9LQCakgKFmR_VOPlko-fCuqpcQ8_4n9rx-3YuWoYQl4T054vOR/exec";
 
 let allStudents = [];
 let userRole = "User";
@@ -68,4 +68,77 @@ function printReceipt(i) {
 
 function logout() {
   location.reload();
+}
+
+
+let allStudents = [];
+
+// Load Students
+async function loadStudents() {
+  allStudents = await callAPI("getStudents");
+  renderStudentTable();
+}
+
+function renderStudentTable() {
+  const tbody = document.getElementById("studentTable");
+  tbody.innerHTML = "";
+
+  allStudents.forEach((s, i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${s[0]}</td>
+        <td>${s[1]}</td>
+        <td>${s[2]}</td>
+        <td>${s[3]}</td>
+        <td>${s[4]}</td>
+        <td>
+          <button class="btn btn-sm btn-warning"
+            onclick="editStudent(${i})">
+            <i class="bi bi-pencil"></i>
+          </button>
+        </td>
+      </tr>`;
+  });
+}
+
+// Open Edit Modal
+function editStudent(index) {
+  const s = allStudents[index];
+
+  editOldName.value = s[0];
+  editName.value = s[0];
+  editGender.value = s[1];
+  editGrade.value = s[2];
+  editTeacher.value = s[3];
+  editFee.value = s[4];
+
+  new bootstrap.Modal(
+    document.getElementById("editStudentModal")
+  ).show();
+}
+
+// Update Student
+async function updateStudent() {
+  const oldName = editOldName.value;
+
+  const data = {
+    studentName: editName.value,
+    gender: editGender.value,
+    grade: editGrade.value,
+    teacherName: editTeacher.value,
+    schoolFee: editFee.value
+  };
+
+  const res = await callAPI("updateStudentData", oldName, data);
+
+  if (res.success) {
+    alert("បានកែទិន្នន័យរួចរាល់");
+    bootstrap.Modal
+      .getInstance(editStudentModal)
+      .hide();
+    loadStudents();
+  } else {
+    alert(res.message);
+  }
 }
