@@ -149,3 +149,88 @@ body {
   width: 1.5rem;
   height: 1.5rem;
 }
+
+
+
+/* Khmer Font Support */
+body, h1, h2, h3, h4, h5, h6, p, span, div, input, select, textarea, button, th, td {
+  font-family: 'Noto Serif Khmer', 'Inter', sans-serif !important;
+}
+
+/* Fix for Khmer text rendering */
+.khmer-text {
+  font-family: 'Noto Serif Khmer', sans-serif;
+  line-height: 1.6;
+}
+
+/* Ensure text doesn't overflow */
+.table td, .table th {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* Dashboard cards improvement */
+.stat-card {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 10px;
+}
+
+.stat-card h4 {
+  font-size: 1.8rem;
+  margin: 10px 0;
+  font-weight: 700;
+}
+
+.stat-card p {
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Fix for small screens */
+@media (max-width: 768px) {
+  .stat-card h4 {
+    font-size: 1.4rem;
+  }
+  
+  .stat-card p {
+    font-size: 0.8rem;
+  }
+  
+  .khmer-text {
+    font-size: 0.9rem;
+  }
+}
+
+/* Teacher table specific */
+#teacherTable th, #teacherTable td {
+  font-size: 0.85rem;
+  padding: 8px 12px;
+}
+
+#teacherTable th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+/* Improve modal for Khmer text */
+.modal-body .form-floating label {
+  font-family: 'Noto Serif Khmer', sans-serif;
+}
+
+/* Number formatting for Khmer */
+.khmer-number {
+  font-family: 'Noto Serif Khmer', sans-serif;
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Dashboard section specific */
+#dashboardSection .row {
+  margin-bottom: 20px;
+}
