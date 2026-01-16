@@ -49,6 +49,41 @@
     </div>
   </div>
 
+<div id="studentSection" class="container-fluid p-3" style="display:none;">
+  <div class="content-box">
+    <div class="p-3 border-bottom">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold m-0">Student Records</h5>
+        <div class="d-flex gap-2">
+          <button class="btn btn-success btn-sm" onclick="exportToExcel()"><i class="bi bi-file-earmark-excel"></i> Export Excel</button>
+          <button class="btn btn-primary btn-sm" onclick="openStudentModal()">+ Add New</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+        <input type="text" id="studentSearch" class="form-control border-start-0" placeholder="ស្វែងរកឈ្មោះសិស្ស ឬគ្រូ..." onkeyup="filterStudents()">
+      </div>
+    </div>
+    
+    <div class="table-responsive">
+      <table class="table table-hover mb-0" id="studentTableMain">
+        <thead>
+          <tr>
+            <th>ឈ្មោះ</th>
+            <th>ភេទ</th>
+            <th>ថ្នាក់</th>
+            <th>គ្រូ</th>
+            <th>តម្លៃ</th>
+            <th class="text-center">សកម្មភាព</th>
+          </tr>
+        </thead>
+        <tbody id="studentBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
   <div id="studentSection" class="container-fluid p-3" style="display:none;">
     <div class="content-box">
       <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
