@@ -1,5 +1,5 @@
 // ប្តូរ URL នេះចេញ!
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyPyR0GvOLuljYGavF_d5Oppzvbjb6rXwhrT47bVfUv5q4rjHI786aw_1NWmBizCqb3/exec"; 
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwv3j_Bso7fMzmv9bfuEQ23m7Rlq1Xi2ST54ub-gBKWofuIVxYckgYify8V3TAkDtq9/exec"; 
 
 let isEditMode = false;
 let originalName = "";
@@ -155,3 +155,4 @@ function calcAddFees() {
     let f = document.getElementById('addFee').value || 0;
     // Update labels if needed
 }
+
