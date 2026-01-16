@@ -1,4 +1,4 @@
-const WEB_APP_URL = "https://github.com/sandada035-blip/student-payment-dashboard"; // ដាក់ URL របស់អ្នក
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyu8ezQJLprjgJD62pcFCjjan3Y-z86DCad7SEvdPyDi69GiEKAm4LH0rjv1ykuQ2aI/exec"; // ដាក់ URL របស់អ្នក
 let userRole = "User", allStudents = [];
 
 async function login() {
@@ -251,4 +251,3 @@ function printDailyReport() {
     win.document.write('</head><body><h3 class="text-center mb-4">របាយការណ៍បង់ប្រាក់ប្រចាំថ្ងៃ</h3>' + content + '</body></html>');
     setTimeout(() => { win.print(); win.close(); }, 500);
 }
-
