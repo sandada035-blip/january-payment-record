@@ -2,112 +2,59 @@
 <html lang="km">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>School Admin Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Admin Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Serif+Khmer:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="style.css" rel="stylesheet">
 </head>
 <body>
   <!-- Login Section -->
-  <div id="loginSection" class="login-wrapper">
-    <div class="login-card shadow-lg">
-      <div class="login-icon-box"><i class="bi bi-mortarboard-fill"></i></div>
-      <h3 class="fw-bold mb-1">School Admin Pro</h3>
-      <p class="text-muted mb-4 small">Dashboard Access</p>
-      <div class="form-floating mb-3">
-        <input type="text" id="username" class="form-control" placeholder="User">
-        <label>Username</label>
-      </div>
-      <div class="form-floating mb-4">
-        <input type="password" id="password" class="form-control" placeholder="Pass">
-        <label>Password</label>
-      </div>
-      <button class="btn btn-primary w-100 btn-login" onclick="login()">LOGIN</button>
+  <div class="login-wrapper" id="loginSection">
+    <div class="login-card">
+      <div class="login-icon-box"><i class="bi bi-person-circle"></i></div>
+      <h4 class="mb-4">ចូលប្រព័ន្ធ</h4>
+      <input type="text" id="username" class="form-control mb-2" placeholder="ឈ្មោះអ្នកប្រើ">
+      <input type="password" id="password" class="form-control mb-3" placeholder="ពាក្យសម្ងាត់">
+      <button class="btn btn-primary w-100 btn-login" onclick="login()">ចូល</button>
     </div>
   </div>
 
   <!-- Main App -->
   <div id="mainApp" style="display:none;">
-    <nav class="app-navbar bg-white p-2 shadow-sm d-flex justify-content-between sticky-top">
-      <h6 class="m-0 fw-bold text-primary"><i class="bi bi-grid-fill"></i> Dashboard</h6>
-      <div class="d-flex gap-1">
-        <button class="btn btn-sm btn-light" onclick="showSection('dashboard')"><i class="bi bi-house"></i></button>
-        <button class="btn btn-sm btn-light" onclick="showSection('students')"><i class="bi bi-people"></i></button>
-        <button class="btn btn-sm btn-info text-white" onclick="showSection('report')"><i class="bi bi-file-earmark-text"></i></button>
-        <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i></button>
-      </div>
+    <nav class="navbar navbar-light bg-light p-3">
+      <span class="navbar-brand mb-0 h1">Dashboard</span>
+      <button class="btn btn-outline-danger" onclick="logout()">ចាកចេញ</button>
     </nav>
 
-    <!-- Dashboard Section -->
-    <div id="dashboardSection" class="container-fluid p-2 section">
-      <div class="row g-2" id="statsRow"></div>
-      <div class="content-box mt-3">
-        <div class="p-2 border-bottom bg-light"><h6 class="fw-bold m-0 small">Teacher Summary</h6></div>
-        <div class="table-responsive"><table class="table table-sm table-hover mb-0" id="teacherTable"><thead></thead><tbody></tbody></table></div>
+    <div class="container my-4">
+      <div class="row" id="statsRow"></div>
+
+      <h5 class="mt-4">Teacher Summary</h5>
+      <div class="table-responsive">
+        <table class="table table-bordered" id="teacherTable"></table>
       </div>
-    </div>
 
-    <!-- Student Section -->
-    <div id="studentSection" class="container-fluid p-2 section" style="display:none;">
-      <div class="content-box p-2">
-        <div class="d-flex justify-content-between mb-2">
-          <h6 class="fw-bold m-0">បញ្ជីឈ្មោះសិស្ស</h6>
-          <div class="admin-only d-flex gap-1" style="display:none;">
-            <button class="btn btn-success btn-xs" onclick="exportToExcel()"><i class="bi bi-file-earmark-excel"></i></button>
-            <button class="btn btn-primary btn-xs" onclick="openStudentModal()">+ Add</button>
-          </div>
-        </div>
-        <div class="input-group input-group-sm mb-2">
-          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-          <input type="text" id="studentSearch" class="form-control border-start-0" placeholder="ស្វែងរក..." onkeyup="filterStudents()">
-        </div>
-        <div class="table-responsive"><table class="table table-sm align-middle mb-0"><tbody id="studentBody"></tbody></table></div>
-      </div>
-    </div>
-
-    <!-- Report Section -->
-    <div id="reportSection" class="container-fluid p-2 section" style="display:none;">
-      <div class="content-box p-3">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="fw-bold m-0">Daily Report</h6>
-          <button class="btn btn-dark btn-sm" onclick="printReport()"><i class="bi bi-printer"></i> Print</button>
-        </div>
-        <div id="printableArea" class="table-responsive">
-          <table class="table table-bordered table-sm" style="font-size: 0.7rem;">
-            <thead class="table-light text-center"><tr id="reportHead"></tr></thead>
-            <tbody id="reportBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <button id="fabBtn" class="fab-btn admin-only" onclick="openStudentModal()" style="display:none;"><i class="bi bi-plus-lg"></i></button>
-  </div>
-
-  <!-- Student Modal -->
-  <div class="modal fade" id="studentModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
-      <div class="modal-content border-0">
-        <div class="modal-header border-0 pb-0"><h6 class="fw-bold" id="modalTitle">បញ្ចូលសិស្ស</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-        <div class="modal-body p-3">
-          <div class="form-floating mb-2"><input type="text" id="addStudentName" class="form-control"><label>ឈ្មោះសិស្ស</label></div>
-          <div class="row g-2 mb-2">
-            <div class="col-6"><select id="addGender" class="form-select"><option value="Male">ប្រុស</option><option value="Female">ស្រី</option></select></div>
-            <div class="col-6"><input type="text" id="addGrade" class="form-control" placeholder="ថ្នាក់"></div>
-          </div>
-          <div class="form-floating mb-2"><select id="addTeacherSelect" class="form-select"><option value="កែមលៀងគា">កែមលៀងគា</option></select><label>គ្រូ</label></div>
-          <div class="form-floating mb-3"><input type="number" id="addFee" class="form-control"><label>តម្លៃសិក្សា</label></div>
-          <button class="btn btn-primary w-100 py-2 fw-bold" onclick="submitStudent()">រក្សាទុក</button>
-        </div>
+      <h5 class="mt-4">Student List</h5>
+      <input type="text" id="studentSearch" class="form-control mb-2" placeholder="ស្វែងរកសិស្ស" oninput="filterStudents()">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>សិស្ស</th>
+              <th>គ្រូ</th>
+              <th>តម្លៃសិក្សា</th>
+              <th>ចំនួន</th>
+            </tr>
+          </thead>
+          <tbody id="studentBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="script.js"></script>
 </body>
 </html>
