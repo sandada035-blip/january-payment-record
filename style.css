@@ -2,29 +2,8 @@
 body { background-color: var(--bg-body); font-family: 'Inter', sans-serif; }
 .login-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #4361ee, #7209b7); display: flex; align-items: center; justify-content: center; z-index: 9999; }
 .login-card { background: white; padding: 2rem; border-radius: 20px; width: 92%; max-width: 380px; text-align: center; }
-.stat-card { background: white; border-radius: 12px; padding: 0.8rem; border-left: 4px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+.stat-card { background: white; border-radius: 12px; padding: 1rem; border-left: 5px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; }
 .content-box { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-.table { font-size: 0.8rem; }
-.btn-xs { padding: 0.2rem 0.4rem; font-size: 0.7rem; }
-.fab-btn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; border: none; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4); z-index: 1000; }
-.fw-bold, .form-select, .form-control, table, h6 { font-family: var(--font-khmer); }
-@media (max-width: 576px) { .app-navbar h6 { font-size: 0.9rem; } }
-
-/* Mobile Responsive */
-@media (max-width: 576px) {
-    .table { font-size: 11px; }
-    .btn-group .btn { padding: 3px 6px; font-size: 10px; }
-    .stat-card .h4 { font-size: 1rem; }
-    .container-fluid { padding-left: 8px; padding-right: 8px; }
-    .app-navbar h5 { font-size: 1rem; }
-}
-
-/* Receipt Print Button Styling */
-.btn-outline-info {
-    color: #0dcaf0;
-    border-color: #0dcaf0;
-}
-.btn-outline-info:hover {
-    background-color: #0dcaf0;
-    color: white;
-}
+.kh { font-family: var(--font-khmer); }
+.fw-bold, .form-select, .form-control, table, h6, .modal-title { font-family: var(--font-khmer); }
+@media print { .app-navbar, .fab-btn, .btn, .admin-only, #studentSearch { display: none !important; } }
