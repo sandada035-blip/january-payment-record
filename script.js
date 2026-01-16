@@ -361,6 +361,229 @@ function loadReport() {
   `).join('');
 }
 
+
+// Load dashboard data with Khmer formatting
+function loadDashboard() {
+  // Format number to Khmer style
+  function formatKhmerNumber(num) {
+    const khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+    return num.toString().replace(/\d/g, digit => khmerDigits[digit]);
+  }
+  
+  // Format currency in KHR
+  function formatKHR(amount) {
+    const formatted = new Intl.NumberFormat('km-KH', {
+      style: 'currency',
+      currency: 'KHR',
+      minimumFractionDigits: 0
+    }).format(amount);
+    
+    // Replace Latin digits with Khmer digits
+    const khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+    let result = formatted;
+    khmerDigits.forEach((khmer, index) => {
+      result = result.replace(new RegExp(index, 'g'), khmer);
+    });
+    return result;
+  }
+  
+  // Sample stats data with Khmer text
+  const stats = [
+    { 
+      title: 'សិស្សសរុប', 
+      value: formatKhmerNumber('1245'), 
+      icon: 'bi-people', 
+      color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+    },
+    { 
+      title: 'គ្រូអ្នកគ្រូ', 
+      value: formatKhmerNumber('38'), 
+      icon: 'bi-person-badge', 
+      color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' 
+    },
+    { 
+      title: 'ថ្នាក់សិក្សា', 
+      value: formatKhmerNumber('23'), 
+      icon: 'bi-building', 
+      color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' 
+    },
+    { 
+      title: 'ចំណូលខែនេះ', 
+      value: formatKHR(12250000), // 12,250,000 KHR
+      icon: 'bi-cash-stack', 
+      color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' 
+    }
+  ];
+  
+  // Render stats cards
+  let statsHTML = '';
+  stats.forEach(stat => {
+    statsHTML += `
+      <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm" style="background: ${stat.color}">
+          <i class="bi ${stat.icon} fs-3 mb-2"></i>
+          <h4 class="khmer-number fw-bold">${stat.value}</h4>
+          <p class="m-0">${stat.title}</p>
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('statsRow').innerHTML = statsHTML;
+  
+  // Load teacher data with Khmer text
+  loadTeachers();
+}
+
+// Load teacher data with improved formatting
+function loadTeachers() {
+  // Sample teacher data with Khmer text
+  teachers = [
+    { 
+      name: 'កែមលៀងគា', 
+      students: '៤៥', 
+      grade: '១០ ក', 
+      fee: '១២០' 
+    },
+    { 
+      name: 'ម៉ៅ សុភ័ក្រ', 
+      students: '៣៨', 
+      grade: '៩ ខ', 
+      fee: '១១០' 
+    },
+    { 
+      name: 'វ៉ាន់ សុធារី', 
+      students: '៤២', 
+      grade: '១១ ក', 
+      fee: '១៣០' 
+    },
+    { 
+      name: 'ហ៊ុន សែន', 
+      students: '៣៥', 
+      grade: '១២ ខ', 
+      fee: '១៥០' 
+    }
+  ];
+  
+  // Render teacher table with Khmer text
+  const teacherTable = document.getElementById('teacherTable');
+  teacherTable.innerHTML = `
+    <thead class="table-light">
+      <tr>
+        <th class="khmer-text">គ្រូ</th>
+        <th class="khmer-text text-center">ចំនួនសិស្ស</th>
+        <th class="khmer-text text-center">ថ្នាក់</th>
+        <th class="khmer-text text-center">តម្លៃជាមធ្យម ($)</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${teachers.map(teacher => `
+        <tr>
+          <td class="fw-bold khmer-text">${teacher.name}</td>
+          <td class="text-center khmer-number">${teacher.students}</td>
+          <td class="text-center khmer-text">${teacher.grade}</td>
+          <td class="text-center khmer-number">${teacher.fee}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+  
+  // Add header title
+  const teacherSection = document.querySelector('#dashboardSection .content-box .p-2');
+  if (teacherSection) {
+    teacherSection.innerHTML = '<h6 class="fw-bold m-0 khmer-text">សង្ខេបព័ត៌មានគ្រូ</h6>';
+  }
+}
+
+
+// Utility functions for Khmer formatting
+const KhmerUtils = {
+  // Convert Latin digits to Khmer digits
+  toKhmerNumber: function(number) {
+    const khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+    return number.toString().replace(/\d/g, digit => khmerDigits[digit]);
+  },
+  
+  // Format currency in KHR
+  formatCurrency: function(amount) {
+    // Format with commas
+    const formatted = amount.toLocaleString('en-US');
+    // Convert to Khmer digits
+    return this.toKhmerNumber(formatted) + ' ៛';
+  },
+  
+  // Format date in Khmer
+  formatDate: function(date) {
+    const khmerMonths = [
+      'មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា',
+      'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'
+    ];
+    
+    const day = this.toKhmerNumber(date.getDate());
+    const month = khmerMonths[date.getMonth()];
+    const year = this.toKhmerNumber(date.getFullYear());
+    
+    return `${day} ${month} ${year}`;
+  }
+};
+
+// Update dashboard to use these utilities
+function updateDashboardWithRealData() {
+  // You can replace this with actual data from Google Sheets
+  const statsData = {
+    totalStudents: 1245,
+    totalTeachers: 38,
+    totalClasses: 23,
+    monthlyRevenue: 12250000 // in KHR
+  };
+  
+  const stats = [
+    { 
+      title: 'សិស្សសរុប', 
+      value: KhmerUtils.toKhmerNumber(statsData.totalStudents), 
+      icon: 'bi-people', 
+      color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+    },
+    { 
+      title: 'គ្រូអ្នកគ្រូ', 
+      value: KhmerUtils.toKhmerNumber(statsData.totalTeachers), 
+      icon: 'bi-person-badge', 
+      color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' 
+    },
+    { 
+      title: 'ថ្នាក់សិក្សា', 
+      value: KhmerUtils.toKhmerNumber(statsData.totalClasses), 
+      icon: 'bi-building', 
+      color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' 
+    },
+    { 
+      title: 'ចំណូលខែនេះ', 
+      value: KhmerUtils.formatCurrency(statsData.monthlyRevenue),
+      icon: 'bi-cash-stack', 
+      color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' 
+    }
+  ];
+  
+  // Render the stats
+  let statsHTML = '';
+  stats.forEach(stat => {
+    statsHTML += `
+      <div class="col-6 col-md-3 mb-3">
+        <div class="stat-card rounded-3 shadow-sm" style="background: ${stat.color}">
+          <i class="bi ${stat.icon} fs-3 mb-2 text-white"></i>
+          <h3 class="fw-bold text-white mb-1">${stat.value}</h3>
+          <p class="text-white m-0 opacity-90">${stat.title}</p>
+        </div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('statsRow').innerHTML = statsHTML;
+}
+
+
+
+
+
 // Print report
 function printReport() {
   const printContent = document.getElementById('printableArea').innerHTML;
