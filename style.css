@@ -1,25 +1,101 @@
-* { font-family: 'Noto Serif Khmer','Inter',sans-serif; }
+:root { 
+    --primary: #4361ee; 
+    --secondary: #3f37c9;
+    --success: #4cc9f0;
+    --danger: #ef4444;
+    --bg-body: #f8f9fa;
+    --font-khmer: 'Noto Serif Khmer', serif;
+}
 
-body { margin:0; background:#f5f7fb; }
+/* មូលដ្ឋានគ្រឹះ */
+body { 
+    background-color: var(--bg-body); 
+    font-family: 'Inter', sans-serif; 
+    overflow-x: hidden; 
+    -webkit-tap-highlight-color: transparent; /* ដកពណ៌ខៀវពេលចុចលើ Mobile */
+}
 
+/* ការរចនាផ្ទាំង Login */
 .login-wrapper {
-  min-height:100vh; display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, #4361ee, #7209b7);
+    display: flex; align-items: center; justify-content: center; z-index: 9999;
 }
 
-.login-card { background:white; padding:40px; border-radius:16px; text-align:center; width:100%; max-width:400px; }
-
-.login-icon-box { width:70px;height:70px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-  border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; color:white; font-size:30px;
+.login-card {
+    background: white; padding: 2.5rem; border-radius: 24px;
+    width: 90%; max-width: 400px; text-align: center; 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
 }
 
-.btn-login { padding:12px; font-weight:600; border-radius:8px; }
-
-.stat-card {
-  min-height:120px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px 10px; color:white; border-radius:10px; margin-bottom:20px;
+.login-icon-box {
+    width: 70px; height: 70px; background: var(--primary);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem; color: white; font-size: 2rem;
 }
 
-.stat-card h4 { font-size:1.8rem; margin:10px 0; font-weight:700; }
-.stat-card p { font-size:0.9rem; text-align:center; margin:0; opacity:0.9; }
+/* ការរចនា Dashboard & Cards */
+.content-box { 
+    background: white; 
+    border-radius: 16px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    overflow: hidden; 
+    margin-bottom: 1.5rem;
+}
 
-.table th, .table td { font-family:'Noto Serif Khmer','Inter',sans-serif; }
+.stat-card { 
+    background: white; 
+    border-radius: 16px; 
+    padding: 1.25rem; 
+    border-left: 5px solid var(--primary); 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    height: 100%;
+}
+
+/* ប៊ូតុងរង្វង់បូក (FAB) */
+.fab-btn {
+    position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+    background: var(--primary); color: white; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    border: none; box-shadow: 0 10px 20px rgba(67, 97, 238, 0.4); 
+    z-index: 1000; transition: transform 0.2s;
+}
+
+.fab-btn:active { transform: scale(0.9); }
+
+/* ការកំណត់អក្សរខ្មែរលើ Element ផ្សេងៗ */
+.fw-bold, .form-select, .form-control, label, table, h1, h2, h3, h4, h5, h6, .btn { 
+    font-family: var(--font-khmer); 
+}
+
+/* --- ការកែលម្អសម្រាប់ Mobile Friendly --- */
+@media (max-width: 576px) {
+    .login-card { padding: 1.5rem; }
+    .stat-card { padding: 1rem; }
+    .stat-card .h4 { font-size: 1.1rem; }
+    
+    /* បង្រួមតារាងលើទូរស័ព្ទ */
+    .table { font-size: 0.85rem; }
+    .table td, .table th { padding: 0.6rem 0.4rem; }
+    
+    /* លាក់ Column ខ្លះដើម្បីកុំឱ្យចង្អៀតលើ Mobile (ត្រូវថែម class នេះក្នុង HTML) */
+    .d-none-mobile { display: none !important; }
+}
+
+/* --- Action Buttons Styling --- */
+.btn-group .btn {
+    border-radius: 8px;
+    margin: 0 2px;
+    padding: 4px 8px;
+}
+
+/* ស្ទីលសម្រាប់ Admin Permissions */
+.admin-only {
+    /* នឹងត្រូវគ្រប់គ្រងដោយ JS បន្ថែម */
+}
+
+/* --- ស្ទីលសម្រាប់បោះពុម្ព (Print View) --- */
+@media print {
+    .no-print { display: none !important; }
+    .card { border: none !important; box-shadow: none !important; }
+}
