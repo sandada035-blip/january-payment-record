@@ -8,41 +8,43 @@ let allStudents = [];
 // សំខាន់៖ យក URL ថ្មីដែលបានពីការ Deploy មកដាក់នៅទីនេះ
 const WEB_APP_URL = "ដាក់_URL_Web_App_ថ្មី_របស់អ្នកទីនេះ"; 
 
+// ១. ត្រូវប្រាកដថា URL នេះត្រឹមត្រូវ (កុំឱ្យមានដកឃ្លាលើស)
+const WEB_APP_URL = "https://script.google.com/macros/s/XXX_YOUR_ID_HERE_XXX/exec";
+
 async function login() {
     const u = document.getElementById('username').value.trim();
     const p = document.getElementById('password').value.trim();
     
     if(!u || !p) {
-        Swal.fire('បញ្ចូលទិន្នន័យ', 'សូមបំពេញ Username និង Password', 'warning');
+        Swal.fire('Warning', 'សូមបញ្ចូល Username និង Password', 'warning');
         return;
     }
 
-    Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading()});
-    
-    // បញ្ជូន [u, p] ជា args ទៅកាន់ checkLogin
+    Swal.fire({ title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading() });
+
+    // ២. ការហៅ API ត្រូវបញ្ជូន parameter ឱ្យចំឈ្មោះ func
     const res = await callAPI('checkLogin', u, p);
     
     if(res && res.success) {
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userRole', res.role);
+        Swal.fire({ icon: 'success', title: 'ជោគជ័យ', timer: 1000, showConfirmButton: false });
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         showDashboard();
-        Swal.close();
     } else {
-        Swal.fire('បរាជ័យ', res ? res.message : "មិនអាចទាក់ទង Server បាន", 'error');
+        Swal.fire('បរាជ័យ', res ? res.message : "មិនអាចភ្ជាប់ទៅកាន់ Server បានទេ", 'error');
     }
 }
 
-async function callAPI(func, ...args) {
-    // បង្កើត URL ឱ្យត្រឹមត្រូវតាមទម្រង់ដែល doGet ត្រូវការ
-    const url = `${WEB_APP_URL}?func=${func}&args=${encodeURIComponent(JSON.stringify(args))}`;
+async function callAPI(funcName, ...args) {
+    // ៣. បង្កើត URL បញ្ជូន funcName ឱ្យបានត្រឹមត្រូវ
+    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
+    
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error('Network response was not ok');
+        if (!response.ok) throw new Error("Network response was not ok");
         return await response.json();
-    } catch (e) {
-        console.error("API Error:", e);
+    } catch (error) {
+        console.error("Fetch error:", error);
         return null;
     }
 }
@@ -155,4 +157,3 @@ function calcAddFees() {
     let f = document.getElementById('addFee').value || 0;
     // Update labels if needed
 }
-
