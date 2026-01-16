@@ -1,27 +1,49 @@
 // ប្តូរ URL នេះចេញ!
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwZMD6o0bQ7jiObUI3eVZPq2AjAqa1NP87c6CcNE0glF--soxUtpUpI3Im7IPHsRjg2/exec"; 
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyPyR0GvOLuljYGavF_d5Oppzvbjb6rXwhrT47bVfUv5q4rjHI786aw_1NWmBizCqb3/exec"; 
 
 let isEditMode = false;
 let originalName = "";
 let allStudents = [];
 
-// 1. Authentication
+// សំខាន់៖ យក URL ថ្មីដែលបានពីការ Deploy មកដាក់នៅទីនេះ
+const WEB_APP_URL = "ដាក់_URL_Web_App_ថ្មី_របស់អ្នកទីនេះ"; 
+
 async function login() {
-    const u = document.getElementById('username').value;
-    const p = document.getElementById('password').value;
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value.trim();
     
-    // ហៅ API ទៅកាន់ Google Script
-    Swal.fire({title: 'Verifying...', didOpen: () => Swal.showLoading()});
+    if(!u || !p) {
+        Swal.fire('បញ្ចូលទិន្នន័យ', 'សូមបំពេញ Username និង Password', 'warning');
+        return;
+    }
+
+    Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading()});
     
-    const res = await callAPI('checkLogin', {username: u, password: p});
+    // បញ្ជូន [u, p] ជា args ទៅកាន់ checkLogin
+    const res = await callAPI('checkLogin', u, p);
     
-    if(res.success) {
+    if(res && res.success) {
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userRole', res.role);
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        showSection('dashboard');
+        showDashboard();
         Swal.close();
     } else {
-        Swal.fire('Error', res.message, 'error');
+        Swal.fire('បរាជ័យ', res ? res.message : "មិនអាចទាក់ទង Server បាន", 'error');
+    }
+}
+
+async function callAPI(func, ...args) {
+    // បង្កើត URL ឱ្យត្រឹមត្រូវតាមទម្រង់ដែល doGet ត្រូវការ
+    const url = `${WEB_APP_URL}?func=${func}&args=${encodeURIComponent(JSON.stringify(args))}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network response was not ok');
+        return await response.json();
+    } catch (e) {
+        console.error("API Error:", e);
+        return null;
     }
 }
 
@@ -133,6 +155,3 @@ function calcAddFees() {
     let f = document.getElementById('addFee').value || 0;
     // Update labels if needed
 }
-
-
-
