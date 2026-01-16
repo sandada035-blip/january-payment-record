@@ -1,4 +1,4 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwGifYYMra0rDUzzRt6LGtCimU_toF7qbEPZUdyMgjleFC1btyL8LocsFFennFQMF1i/exec"; // ដាក់ URL របស់អ្នក
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwMS-1x__SSQKoXVlc1OR5xiVa_CGK6iAEp8HFOWT1knCGHygZlj0XSkH_MwwFrdZSi/exec"; // ដាក់ URL របស់អ្នក
 let userRole = "User", allStudents = [];
 
 async function login() {
@@ -24,12 +24,18 @@ function applyPermissions() {
   adminElems.forEach(el => el.style.setProperty('display', userRole === 'Admin' ? 'flex' : 'none', 'important'));
 }
 
-async function callAPI(func, ...args) {
-  const url = `${WEB_APP_URL}?func=${func}&args=${encodeURIComponent(JSON.stringify(args))}`;
-  try {
-    const response = await fetch(url);
-    return await response.json();
-  } catch (e) { return null; }
+async function callAPI(funcName, ...args) {
+    // ត្រូវប្រាកដថា WEB_APP_URL របស់អ្នកបញ្ចប់ដោយ /exec
+    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
+    
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Network response was not ok");
+        return await response.json();
+    } catch (error) {
+        console.error("Fetch error:", error);
+        return null;
+    }
 }
 
 function showSection(id) {
@@ -245,4 +251,3 @@ function printDailyReport() {
     win.document.write('</head><body><h3 class="text-center mb-4">របាយការណ៍បង់ប្រាក់ប្រចាំថ្ងៃ</h3>' + content + '</body></html>');
     setTimeout(() => { win.print(); win.close(); }, 500);
 }
-
