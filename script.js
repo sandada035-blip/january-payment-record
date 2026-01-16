@@ -1,7 +1,8 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw059ISJ4Hsele0Ky_oWq1JvRTtEcu-NwqGQS1O19iVLPCWP89b3a-4HS2-wfHCcWjm/exec"; 
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_T6NP98JLKr7MK3Ji_JrfV6I302HRJnM2cnRcM0-i9ChNq7tpBf6ltBhO53tPFrhr/exec"; 
 let userRole = "User"; 
 let allStudents = [];
 
+// មុខងារ Login និងបែងចែកសិទ្ធិ
 async function login() {
     const u = document.getElementById('username').value.trim();
     const p = document.getElementById('password').value.trim();
@@ -11,19 +12,19 @@ async function login() {
     const res = await callAPI('checkLogin', u, p);
     
     if(res && res.success) {
-        userRole = res.role; // រក្សាទុក Role (Admin ឬ User)
+        userRole = res.role; 
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         
-        // លាក់ប៊ូតុង Add សម្រាប់ User
-        if(userRole !== 'Admin') {
-            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-        }
+        // លាក់មុខងារ Admin សម្រាប់ User ធម្មតា
+        document.querySelectorAll('.admin-only').forEach(el => {
+            el.style.setProperty('display', userRole === 'Admin' ? 'block' : 'none', 'important');
+        });
         
         showSection('dashboard');
         Swal.close();
     } else {
-        Swal.fire('បរាជ័យ', 'Username ឬ Password ខុស', 'error');
+        Swal.fire('បរាជ័យ', 'Username ឬ Password មិនត្រឹមត្រូវ', 'error');
     }
 }
 
@@ -35,6 +36,7 @@ async function callAPI(func, ...args) {
     } catch (e) { return null; }
 }
 
+// បង្ហាញតារាងសិស្សជាមួយប៊ូតុង Action តាម Role
 function renderStudentTable(rows) {
     allStudents = rows;
     const body = document.getElementById('studentBody');
@@ -68,22 +70,36 @@ function filterStudents() {
 // មុខងារ Export Excel
 function exportToExcel() {
     const wb = XLSX.utils.table_to_book(document.getElementById("studentTableMain"));
-    XLSX.writeFile(wb, "Student_List.xlsx");
+    XLSX.writeFile(wb, "Student_List_" + new Date().toLocaleDateString() + ".xlsx");
 }
 
-// មុខងារ Print Receipt
+// មុខងារ Print Receipt (វិក្កយបត្រ)
 function printReceipt(index) {
     const s = allStudents[index];
     const printWindow = window.open('', '', 'height=600,width=800');
     printWindow.document.write(`
-        <html><body style="font-family:sans-serif; text-align:center; padding:20px;">
-            <h2>RECEIPT</h2><hr>
-            <p>Student: <b>${s[0]}</b></p>
-            <p>Teacher: <b>${s[3]}</b></p>
-            <p>Fee: <b>${s[4]}</b></p>
-            <hr><p>Thank You!</p>
+        <html>
+        <head>
+            <style>
+                body { font-family: sans-serif; text-align: center; padding: 40px; }
+                .receipt { border: 1px solid #ccc; padding: 20px; width: 300px; margin: auto; border-radius: 10px; }
+                .line { border-bottom: 1px dashed #eee; margin: 15px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="receipt">
+                <h3>វិក្កយបត្របង់ប្រាក់</h3>
+                <p>សាលារៀន អគ្គមហេសី</p>
+                <div class="line"></div>
+                <p style="text-align:left">សិស្ស: <b>${s[0]}</b></p>
+                <p style="text-align:left">គ្រូ: <b>${s[3]}</b></p>
+                <p style="text-align:left">តម្លៃសិក្សា: <b>${s[4]}</b></p>
+                <div class="line"></div>
+                <p>អរគុណសម្រាប់ការបង់ប្រាក់!</p>
+            </div>
             <script>window.print(); window.close();</script>
-        </body></html>
+        </body>
+        </html>
     `);
 }
 function logout() { location.reload(); }
