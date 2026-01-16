@@ -75,8 +75,14 @@ body {
     .stat-card .h4 { font-size: 1.1rem; }
     
     /* បង្រួមតារាងលើទូរស័ព្ទ */
-    .table { font-size: 0.85rem; }
-    .table td, .table th { padding: 0.6rem 0.4rem; }
+   /* ទៅជាកូដថ្មីនេះវិញ */
+.table { 
+    font-size: 0.85rem; 
+    display: block;        /* បន្ថែមចំណុចនេះ */
+    width: 100%;          /* បន្ថែមចំណុចនេះ */
+    overflow-x: auto;     /* បន្ថែមចំណុចនេះ ដើម្បីឱ្យអូសទៅឆ្វេងស្តាំបាន */
+    -webkit-overflow-scrolling: touch; 
+}
     
     /* លាក់ Column ខ្លះដើម្បីកុំឱ្យចង្អៀតលើ Mobile (ត្រូវថែម class នេះក្នុង HTML) */
     .d-none-mobile { display: none !important; }
@@ -89,10 +95,7 @@ body {
     padding: 4px 8px;
 }
 
-/* ស្ទីលសម្រាប់ Admin Permissions */
-.admin-only {
-    /* នឹងត្រូវគ្រប់គ្រងដោយ JS បន្ថែម */
-}
+
 
 /* --- ស្ទីលសម្រាប់បោះពុម្ព (Print View) --- */
 @media print {
