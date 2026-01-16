@@ -1,4 +1,4 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxvh7nLHQwBkfIkOiUw00ymdZWu2mBYEzrJLkzeRJNWwzjnMfgih3aCG_QiE6z7j6HT/exec"; // ដាក់ URL របស់អ្នក
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyx1X4GUvkMzhhtMrizWUjppUWG1uXYvYoUJ5UamOhgrbOCf5xiiHMZEjNURe6aD8Rp/exec"; // ដាក់ URL របស់អ្នក
 let userRole = "User", allStudents = [];
 
 async function login() {
@@ -27,7 +27,7 @@ function applyPermissions() {
 // ប្តូរ URL នេះជាមួយ URL ដែលបានមកពីការ Deploy ថ្មីរបស់អ្នក
 
 async function callAPI(funcName, ...args) {
-  // បង្កើត URL ដែលរួមមាន func និង args ជា JSON string
+  // បង្កើត URL រួមមាន func និង args ជា JSON string
   const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
   
   try {
