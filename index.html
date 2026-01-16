@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>School Admin Pro - Vercel</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+Khmer:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+<div id="loginSection" class="login-wrapper">
+  <div class="login-card">
+    <div class="login-icon-box"><i class="bi bi-mortarboard-fill"></i></div>
+    <h3 class="fw-bold mb-1">PREAH REACH AKK MOHESSEY</h3>
+    <p class="text-muted mb-4 small">Admin Dashboard Access</p>
+    
+    <div class="form-floating mb-3 text-start">
+      <input type="text" id="username" class="form-control form-control-login" placeholder="Username">
+      <label>Username</label>
+    </div>
+    <div class="form-floating mb-4 text-start">
+      <input type="password" id="password" class="form-control form-control-login" placeholder="Password">
+      <label>Password</label>
+    </div>
+    <button class="btn btn-primary w-100 btn-login" onclick="login()">LOGIN NOW</button>
+  </div>
+</div>
+
+<div id="mainApp" style="display:none;">
+  <nav class="app-navbar bg-white p-3 shadow-sm d-flex justify-content-between align-items-center sticky-top">
+    <div class="d-flex align-items-center gap-2">
+      <div class="bg-primary text-white rounded-circle p-2"><i class="bi bi-grid-fill"></i></div>
+      <h5 class="m-0 fw-bold">Dashboard</h5>
+    </div>
+    <div class="d-none d-md-flex gap-2">
+      <button class="btn btn-light" onclick="showSection('dashboard')">Home</button>
+      <button class="btn btn-light" onclick="showSection('students')">Students</button>
+      <button class="btn btn-outline-danger" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div id="dashboard" class="container-fluid px-3 pt-3 section">
+    <div class="row g-3" id="statCards">
+      </div>
+    <div class="content-box p-3 mt-4">
+      <h6 class="fw-bold">Teacher Summary</h6>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle" id="teacherTable">
+          <thead><tr><th>គ្រូ</th><th>ភេទ</th><th>សិស្ស</th><th>សរុប</th></tr></thead>
+          <tbody id="teacherBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="studentSection" class="container-fluid px-3 pt-3 section" style="display:none;">
+    <div class="content-box">
+      <div class="p-3 border-bottom d-flex justify-content-between">
+        <h5 class="fw-bold m-0">បញ្ជីឈ្មោះសិស្ស</h5>
+        <button class="btn btn-sm btn-primary" onclick="openStudentModal()">+ បន្ថែមសិស្ស</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr><th>ឈ្មោះ</th><th>ថ្នាក់</th><th>គ្រូ</th><th>តម្លៃ</th><th>សកម្មភាព</th></tr>
+          </thead>
+          <tbody id="studentBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <button id="fabAddBtn" class="fab-btn" onclick="openStudentModal()"><i class="bi bi-plus-lg"></i></button>
+</div>
+
+<div class="modal fade" id="studentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-0"><h5 class="fw-bold" id="modalTitle">បញ្ចូលសិស្សថ្មី</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body p-4">
+        <input type="hidden" id="editOriginalName">
+        <div class="form-floating mb-3"><input type="text" id="addStudentName" class="form-control" placeholder="Name"><label>ឈ្មោះសិស្ស</label></div>
+        <div class="row g-2 mb-3">
+          <div class="col-6"><select id="addGender" class="form-select"><option value="Male">ប្រុស</option><option value="Female">ស្រី</option></select></div>
+          <div class="col-6"><input type="text" id="addGrade" class="form-control" placeholder="ថ្នាក់"></div>
+        </div>
+        <div class="form-floating mb-3">
+          <select id="addTeacherSelect" class="form-select">
+            <option value="កែមលៀងគា">កែមលៀងគា</option>
+            <option value="ប្រាក់ប្រសើ">ប្រាក់ប្រសើ</option>
+            </select>
+          <label>ជ្រើសរើសគ្រូ</label>
+        </div>
+        <div class="form-floating mb-3"><input type="number" id="addFee" class="form-control" oninput="calcAddFees()"><label>តម្លៃសិក្សា</label></div>
+        <button class="btn btn-primary w-100 py-3 fw-bold" onclick="submitStudent()">រក្សាទុក</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
