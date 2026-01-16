@@ -1,102 +1,1392 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="km">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>School Admin Pro - Vercel</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Serif+Khmer:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Serif+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    /* Inline CSS for immediate rendering */
+    * {
+      font-family: 'Noto Serif Khmer', 'Inter', sans-serif !important;
+    }
+    
+    body {
+      background-color: #f5f7fb;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    
+    /* Login Section */
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 15px;
+    }
+    
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 30px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .login-icon-box {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 25px;
+      color: white;
+      font-size: 36px;
+    }
+    
+    .btn-login {
+      padding: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    /* App Layout */
+    .app-navbar {
+      border-bottom: 1px solid #eaeaea;
+      min-height: 60px;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      background: white;
+    }
+    
+    .section {
+      min-height: calc(100vh - 60px);
+      padding: 20px;
+    }
+    
+    .content-box {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #eaeaea;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    /* Stats Cards */
+    .stat-card {
+      padding: 25px 15px;
+      border-radius: 12px;
+      color: white;
+      text-align: center;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stat-card i {
+      font-size: 32px;
+      margin-bottom: 15px;
+      opacity: 0.9;
+    }
+    
+    .stat-card h4 {
+      margin: 10px 0;
+      font-weight: 700;
+      font-size: 28px;
+    }
+    
+    .stat-card p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 16px;
+    }
+    
+    /* Table Styles */
+    .table {
+      font-size: 0.9rem;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    .table th {
+      font-weight: 600;
+      color: #2d3748;
+      background-color: #f7fafc;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 12px 15px;
+    }
+    
+    .table td {
+      vertical-align: middle;
+      padding: 12px 15px;
+      border-bottom: 1px solid #edf2f7;
+    }
+    
+    .table tbody tr:hover {
+      background-color: #f8fafc;
+    }
+    
+    /* FAB Button */
+    .fab-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    
+    .fab-btn:hover {
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 0 15px 30px rgba(102, 126, 234, 0.6);
+    }
+    
+    /* Khmer Text Specific */
+    .khmer-text {
+      font-family: 'Noto Serif Khmer', sans-serif;
+      line-height: 1.6;
+    }
+    
+    .khmer-number {
+      font-family: 'Noto Serif Khmer', sans-serif;
+      direction: ltr;
+      unicode-bidi: embed;
+    }
+    
+    /* Form Controls */
+    .form-control, .form-select {
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      padding: 12px 15px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-floating label {
+      font-size: 14px;
+      color: #6b7280;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .login-card {
+        padding: 30px 20px;
+      }
+      
+      .stat-card {
+        min-height: 120px;
+        padding: 20px 10px;
+      }
+      
+      .stat-card h4 {
+        font-size: 22px;
+      }
+      
+      .stat-card p {
+        font-size: 14px;
+      }
+      
+      .fab-btn {
+        width: 60px;
+        height: 60px;
+        bottom: 20px;
+        right: 20px;
+      }
+      
+      .section {
+        padding: 15px;
+      }
+    }
+    
+    /* Modal */
+    .modal-content {
+      border-radius: 16px;
+      border: none;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+    
+    .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 16px 16px 0 0;
+      padding: 20px;
+    }
+    
+    .modal-title {
+      font-weight: 600;
+    }
+    
+    /* Button Styles */
+    .btn {
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+    
+    .btn-xs {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    
+    /* Badge */
+    .badge {
+      font-family: 'Noto Serif Khmer', sans-serif;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
+    
+    /* Custom Colors */
+    .bg-primary-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .text-primary-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Loading */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
+    }
+  </style>
 </head>
 <body>
 
+<!-- Login Section -->
 <div id="loginSection" class="login-wrapper">
-  <div class="login-card shadow-lg">
-    <div class="login-icon-box"><i class="bi bi-mortarboard-fill"></i></div>
-    <h3 class="fw-bold mb-1">PREAH REACH AKK MOHESSEY</h3>
-    <p class="text-muted mb-4 small">Dashboard Access</p>
-    <div class="form-floating mb-3"><input type="text" id="username" class="form-control" placeholder="User"><label>Username</label></div>
-    <div class="form-floating mb-4"><input type="password" id="password" class="form-control" placeholder="Pass"><label>Password</label></div>
-    <button class="btn btn-primary w-100 btn-login" onclick="login()">LOGIN</button>
+  <div class="login-card">
+    <div class="login-icon-box">
+      <i class="bi bi-mortarboard-fill"></i>
+    </div>
+    <h3 class="fw-bold mb-2 text-primary-gradient">ព្រះរាជាគណៈមហាវិទ្យាល័យ</h3>
+    <p class="text-muted mb-4 small">ផ្ទាំងគ្រប់គ្រងប្រព័ន្ធ</p>
+    
+    <div class="form-floating mb-3">
+      <input type="text" id="username" class="form-control" placeholder="ឈ្មោះអ្នកប្រើប្រាស់">
+      <label>ឈ្មោះអ្នកប្រើប្រាស់</label>
+    </div>
+    
+    <div class="form-floating mb-4">
+      <input type="password" id="password" class="form-control" placeholder="ពាក្យសម្ងាត់">
+      <label>ពាក្យសម្ងាត់</label>
+    </div>
+    
+    <button class="btn btn-primary w-100 btn-login bg-primary-gradient border-0" onclick="login()">
+      <span id="loginText">ចូលប្រើប្រាស់</span>
+      <span id="loginLoading" class="d-none">
+        <div class="loading me-2 d-inline-block"></div>
+        កំពុងចូល...
+      </span>
+    </button>
+    
+    <div class="mt-4">
+      <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        សម្រាប់ការសាកល្បង៖ ឈ្មោះអ្នកប្រើណាមួយ / ពាក្យសម្ងាត់ណាមួយ
+      </small>
+    </div>
   </div>
 </div>
 
+<!-- Main Application -->
 <div id="mainApp" style="display:none;">
-  <nav class="app-navbar bg-white p-2 shadow-sm d-flex justify-content-between sticky-top">
-    <h6 class="m-0 fw-bold text-primary"><i class="bi bi-grid-fill"></i> Dashboard</h6>
-    <div class="d-flex gap-1">
-      <button class="btn btn-sm btn-light" onclick="showSection('dashboard')"><i class="bi bi-house"></i></button>
-      <button class="btn btn-sm btn-light" onclick="showSection('students')"><i class="bi bi-people"></i></button>
-      <button class="btn btn-sm btn-info text-white" onclick="showSection('report')"><i class="bi bi-file-earmark-text"></i></button>
-      <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i></button>
+  <!-- Navigation Bar -->
+  <nav class="app-navbar shadow-sm">
+    <div class="d-flex align-items-center">
+      <div class="bg-primary-gradient rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+        <i class="bi bi-mortarboard-fill text-white"></i>
+      </div>
+      <h5 class="m-0 fw-bold text-dark khmer-text">
+        <span class="d-none d-md-inline">ព្រះរាជាគណៈមហាវិទ្យាល័យ</span>
+        <span class="d-inline d-md-none">PRAM</span>
+      </h5>
+    </div>
+    
+    <div class="d-flex align-items-center gap-2">
+      <div class="d-flex bg-light rounded-pill p-1">
+        <button class="btn btn-sm px-3 rounded-pill" onclick="showSection('dashboard')" id="btnDashboard">
+          <i class="bi bi-house-door"></i>
+          <span class="d-none d-md-inline ms-1">ផ្ទាំង</span>
+        </button>
+        <button class="btn btn-sm px-3 rounded-pill" onclick="showSection('students')" id="btnStudents">
+          <i class="bi bi-people"></i>
+          <span class="d-none d-md-inline ms-1">សិស្ស</span>
+        </button>
+        <button class="btn btn-sm px-3 rounded-pill" onclick="showSection('report')" id="btnReport">
+          <i class="bi bi-file-text"></i>
+          <span class="d-none d-md-inline ms-1">របាយការណ៍</span>
+        </button>
+      </div>
+      
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+          <i class="bi bi-person-circle me-1"></i>
+          <span id="currentUsername" class="d-none d-md-inline"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="#" onclick="logout()">
+            <i class="bi bi-box-arrow-right me-2"></i>ចាកចេញ
+          </a></li>
+        </ul>
+      </div>
     </div>
   </nav>
 
-  <div id="dashboardSection" class="container-fluid p-2 section">
-    <div class="row g-2" id="statsRow"></div>
-    <div class="content-box mt-3">
-      <div class="p-2 border-bottom bg-light"><h6 class="fw-bold m-0 small">Teacher Summary</h6></div>
-      <div class="table-responsive"><table class="table table-sm table-hover mb-0" id="teacherTable"><thead></thead><tbody></tbody></table></div>
+  <!-- Dashboard Section -->
+  <div id="dashboardSection" class="container-fluid section">
+    <div class="row mb-4">
+      <div class="col">
+        <h4 class="fw-bold khmer-text text-dark">ផ្ទាំងគ្រប់គ្រង</h4>
+        <p class="text-muted mb-0 khmer-text">ទិន្នន័យសង្ខេបនៃប្រព័ន្ធគ្រប់គ្រងសាលា</p>
+      </div>
     </div>
-  </div>
-
-  <div id="studentSection" class="container-fluid p-2 section" style="display:none;">
-    <div class="content-box p-2">
-      <div class="d-flex justify-content-between mb-2">
-        <h6 class="fw-bold m-0">បញ្ជីឈ្មោះសិស្ស</h6>
-        <div class="admin-only d-flex gap-1" style="display:none;">
-          <button class="btn btn-success btn-xs" onclick="exportToExcel()"><i class="bi bi-file-earmark-excel"></i></button>
-          <button class="btn btn-primary btn-xs" onclick="openStudentModal()">+ Add</button>
-        </div>
-      </div>
-      <div class="input-group input-group-sm mb-2">
-        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-        <input type="text" id="studentSearch" class="form-control border-start-0" placeholder="ស្វែងរក..." onkeyup="filterStudents()">
-      </div>
-      <div class="table-responsive"><table class="table table-sm align-middle mb-0"><tbody id="studentBody"></tbody></table></div>
+    
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5" id="statsRow">
+      <!-- Stats will be loaded here dynamically -->
     </div>
-  </div>
-
-  <div id="reportSection" class="container-fluid p-2 section" style="display:none;">
-    <div class="content-box p-3">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h6 class="fw-bold m-0">Daily Report</h6>
-        <button class="btn btn-dark btn-sm" onclick="printReport()"><i class="bi bi-printer"></i> Print</button>
+    
+    <!-- Teacher Summary -->
+    <div class="content-box">
+      <div class="p-4 border-bottom bg-light">
+        <h5 class="fw-bold m-0 khmer-text">សង្ខេបព័ត៌មានគ្រូ</h5>
+        <p class="text-muted mb-0 small khmer-text">ទិន្នន័យប្រចាំខែវិភាគ</p>
       </div>
-      <div id="printableArea" class="table-responsive">
-        <table class="table table-bordered table-sm" style="font-size: 0.7rem;">
-          <thead class="table-light text-center"><tr id="reportHead"></tr></thead>
-          <tbody id="reportBody"></tbody>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="teacherTable">
+          <thead></thead>
+          <tbody></tbody>
         </table>
       </div>
     </div>
+    
+    <!-- Recent Activities -->
+    <div class="content-box mt-4">
+      <div class="p-4 border-bottom bg-light">
+        <h5 class="fw-bold m-0 khmer-text">សកម្មភាពថ្មីៗ</h5>
+      </div>
+      <div class="p-3">
+        <div class="list-group list-group-flush" id="recentActivities">
+          <!-- Activities will be loaded here -->
+        </div>
+      </div>
+    </div>
   </div>
 
-  <button id="fabBtn" class="fab-btn admin-only" onclick="openStudentModal()" style="display:none;"><i class="bi bi-plus-lg"></i></button>
+  <!-- Student Section -->
+  <div id="studentSection" class="container-fluid section" style="display:none;">
+    <div class="row mb-4">
+      <div class="col">
+        <h4 class="fw-bold khmer-text text-dark">ការគ្រប់គ្រងសិស្ស</h4>
+        <p class="text-muted mb-0 khmer-text">គ្រប់គ្រងបញ្ជីសិស្ស និងទិន្នន័យសិក្សា</p>
+      </div>
+    </div>
+    
+    <div class="content-box">
+      <div class="p-4 border-bottom bg-light">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+          <div>
+            <h5 class="fw-bold m-0 khmer-text">បញ្ជីឈ្មោះសិស្ស</h5>
+            <p class="text-muted mb-0 small khmer-text">សរុប <span id="studentCount" class="fw-bold">០</span> នាក់</p>
+          </div>
+          <div class="admin-only d-flex gap-2" style="display:none;">
+            <button class="btn btn-success btn-sm d-flex align-items-center" onclick="exportToExcel()">
+              <i class="bi bi-file-earmark-excel me-2"></i> Excel
+            </button>
+            <button class="btn btn-primary btn-sm d-flex align-items-center bg-primary-gradient border-0" onclick="openStudentModal()">
+              <i class="bi bi-plus-lg me-2"></i> បន្ថែមសិស្ស
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 border-bottom">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search"></i>
+              </span>
+              <input type="text" id="studentSearch" class="form-control border-start-0" placeholder="ស្វែងរកសិស្សតាមឈ្មោះ ថ្នាក់ ឬគ្រូ..." onkeyup="filterStudents()">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <select id="gradeFilter" class="form-select" onchange="filterStudents()">
+              <option value="">ថ្នាក់ទាំងអស់</option>
+              <option value="១០ ក">១០ ក</option>
+              <option value="៩ ខ">៩ ខ</option>
+              <option value="១១ ក">១១ ក</option>
+              <option value="១២ ខ">១២ ខ</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th width="5%" class="text-center">ល.រ</th>
+              <th width="35%">ឈ្មោះសិស្ស</th>
+              <th width="15%" class="text-center">ភេទ</th>
+              <th width="15%" class="text-center">ថ្នាក់</th>
+              <th width="20%" class="text-center">គ្រូ</th>
+              <th width="10%" class="text-center">សកម្មភាព</th>
+            </tr>
+          </thead>
+          <tbody id="studentBody">
+            <!-- Students will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="p-3 border-top text-center">
+        <small class="text-muted khmer-text">
+          <i class="bi bi-info-circle me-1"></i>
+          ចុចលើរូបសញ្ញាខាងលើដើម្បីកែសម្រួលព័ត៌មានសិស្ស
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Section -->
+  <div id="reportSection" class="container-fluid section" style="display:none;">
+    <div class="row mb-4">
+      <div class="col">
+        <h4 class="fw-bold khmer-text text-dark">របាយការណ៍ប្រចាំថ្ងៃ</h4>
+        <p class="text-muted mb-0 khmer-text">ទិន្នន័យវត្តមាន និងចំណូលប្រចាំថ្ងៃ</p>
+      </div>
+    </div>
+    
+    <div class="content-box">
+      <div class="p-4 border-bottom bg-light">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+          <div>
+            <h5 class="fw-bold m-0 khmer-text">របាយការណ៍វត្តមានសិស្ស</h5>
+            <p class="text-muted mb-0 small khmer-text">ខែ <span id="currentMonth" class="fw-bold"></span></p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm d-flex align-items-center" onclick="exportReportToExcel()">
+              <i class="bi bi-download me-2"></i> ទាញយក
+            </button>
+            <button class="btn btn-dark btn-sm d-flex align-items-center" onclick="printReport()">
+              <i class="bi bi-printer me-2"></i> បោះពុម្ព
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 border-bottom">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label khmer-text">ពីថ្ងៃទី</label>
+            <input type="date" id="reportStartDate" class="form-control" value="2024-12-01">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label khmer-text">ដល់ថ្ងៃទី</label>
+            <input type="date" id="reportEndDate" class="form-control" value="2024-12-31">
+          </div>
+        </div>
+        <div class="mt-3">
+          <button class="btn btn-primary bg-primary-gradient border-0" onclick="loadReport()">
+            <i class="bi bi-funnel me-2"></i> បង្ហាញរបាយការណ៍
+          </button>
+        </div>
+      </div>
+      
+      <div id="printableArea">
+        <div class="p-4">
+          <div class="text-center mb-4">
+            <h4 class="fw-bold khmer-text">ព្រះរាជាគណៈមហាវិទ្យាល័យ</h4>
+            <h5 class="khmer-text">របាយការណ៍វត្តមានសិស្ស</h5>
+            <p class="text-muted khmer-text" id="reportDateRange"></p>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table table-bordered" style="font-size: 0.9rem;">
+              <thead class="table-light text-center">
+                <tr id="reportHead"></tr>
+              </thead>
+              <tbody id="reportBody"></tbody>
+              <tfoot id="reportFooter"></tfoot>
+            </table>
+          </div>
+          
+          <div class="row mt-4">
+            <div class="col-md-4 text-center">
+              <p class="mb-1 khmer-text">អ្នកធ្វើរបាយការណ៍</p>
+              <div class="border-top pt-2">
+                <p class="fw-bold khmer-text mb-0">........................................</p>
+              </div>
+            </div>
+            <div class="col-md-4 text-center">
+              <p class="mb-1 khmer-text">អ្នកត្រួតពិនិត្យ</p>
+              <div class="border-top pt-2">
+                <p class="fw-bold khmer-text mb-0">........................................</p>
+              </div>
+            </div>
+            <div class="col-md-4 text-center">
+              <p class="mb-1 khmer-text">អ្នកគ្រប់គ្រង</p>
+              <div class="border-top pt-2">
+                <p class="fw-bold khmer-text mb-0">........................................</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAB Button -->
+  <button id="fabBtn" class="fab-btn admin-only" onclick="openStudentModal()" style="display:none;">
+    <i class="bi bi-plus-lg"></i>
+  </button>
 </div>
 
+<!-- Student Modal -->
 <div class="modal fade" id="studentModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
-    <div class="modal-content border-0">
-      <div class="modal-header border-0 pb-0"><h6 class="fw-bold" id="modalTitle">បញ្ចូលសិស្ស</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body p-3">
-        <div class="form-floating mb-2"><input type="text" id="addStudentName" class="form-control"><label>ឈ្មោះសិស្ស</label></div>
-        <div class="row g-2 mb-2">
-          <div class="col-6"><select id="addGender" class="form-select"><option value="Male">ប្រុស</option><option value="Female">ស្រី</option></select></div>
-          <div class="col-6"><input type="text" id="addGrade" class="form-control" placeholder="ថ្នាក់"></div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary-gradient text-white border-0">
+        <h5 class="modal-title khmer-text" id="modalTitle">បញ្ចូលសិស្សថ្មី</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="form-floating mb-3">
+          <input type="text" id="addStudentName" class="form-control" placeholder="ឈ្មោះសិស្ស">
+          <label>ឈ្មោះសិស្ស</label>
         </div>
-        <div class="form-floating mb-2"><select id="addTeacherSelect" class="form-select"><option value="កែមលៀងគា">កែមលៀងគា</option></select><label>គ្រូ</label></div>
-        <div class="form-floating mb-3"><input type="number" id="addFee" class="form-control"><label>តម្លៃសិក្សា</label></div>
-        <button class="btn btn-primary w-100 py-2 fw-bold" onclick="submitStudent()">រក្សាទុក</button>
+        
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <div class="form-floating">
+              <select id="addGender" class="form-select">
+                <option value="ប្រុស">ប្រុស</option>
+                <option value="ស្រី">ស្រី</option>
+              </select>
+              <label>ភេទ</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="text" id="addGrade" class="form-control" placeholder="ថ្នាក់">
+              <label>ថ្នាក់</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <select id="addTeacherSelect" class="form-select">
+            <option value="កែមលៀងគា">កែមលៀងគា</option>
+            <option value="ម៉ៅ សុភ័ក្រ">ម៉ៅ សុភ័ក្រ</option>
+            <option value="វ៉ាន់ សុធារី">វ៉ាន់ សុធារី</option>
+            <option value="ហ៊ុន សែន">ហ៊ុន សែន</option>
+          </select>
+          <label>គ្រូភាគខ្លួន</label>
+        </div>
+        
+        <div class="form-floating mb-4">
+          <input type="number" id="addFee" class="form-control" placeholder="តម្លៃសិក្សា" value="120">
+          <label>តម្លៃសិក្សា ($)</label>
+        </div>
+        
+        <button class="btn btn-primary w-100 py-3 fw-bold bg-primary-gradient border-0" onclick="submitStudent()">
+          <span id="saveText">រក្សាទុកព័ត៌មាន</span>
+          <span id="saveLoading" class="d-none">
+            <div class="loading me-2 d-inline-block"></div>
+            កំពុងរក្សាទុក...
+          </span>
+        </button>
       </div>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="script.js"></script>
+<script>
+  // Global variables
+  let currentUser = null;
+  let students = [];
+  let teachers = [];
+  let reports = [];
+  
+  // Utility functions for Khmer formatting
+  const KhmerUtils = {
+    toKhmerNumber: function(number) {
+      const khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+      return number.toString().replace(/\d/g, digit => khmerDigits[digit]);
+    },
+    
+    formatCurrency: function(amount) {
+      const formatted = amount.toLocaleString('en-US');
+      return this.toKhmerNumber(formatted) + ' ៛';
+    },
+    
+    formatDate: function(date) {
+      const khmerMonths = [
+        'មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា',
+        'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'
+      ];
+      
+      const day = this.toKhmerNumber(date.getDate());
+      const month = khmerMonths[date.getMonth()];
+      const year = this.toKhmerNumber(date.getFullYear());
+      
+      return `${day} ${month} ${year}`;
+    }
+  };
+  
+  // Initialize app
+  function initApp() {
+    const savedUser = localStorage.getItem('schoolAdminUser');
+    if (savedUser) {
+      try {
+        currentUser = JSON.parse(savedUser);
+        showApp();
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+      }
+    }
+    
+    // Setup event listeners
+    document.getElementById('password').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') login();
+    });
+    
+    document.getElementById('addStudentName').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') submitStudent();
+    });
+    
+    // Set current month in report section
+    const currentMonth = new Date().toLocaleDateString('km-KH', { month: 'long' });
+    document.getElementById('currentMonth').textContent = currentMonth;
+    
+    // Set default date ranges for report
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    
+    document.getElementById('reportStartDate').valueAsDate = firstDay;
+    document.getElementById('reportEndDate').valueAsDate = lastDay;
+    
+    console.log('App initialized');
+  }
+  
+  // Login function
+  async function login() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    
+    if (!username || !password) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'សូមបំពេញ',
+        text: 'សូមបំពេញឈ្មោះអ្នកប្រើ និងពាក្យសម្ងាត់',
+        confirmButtonText: 'យល់ព្រម'
+      });
+      return;
+    }
+    
+    // Show loading state
+    document.getElementById('loginText').classList.add('d-none');
+    document.getElementById('loginLoading').classList.remove('d-none');
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // For demo purposes, accept any login
+    // In production, you should validate against backend
+    currentUser = {
+      username: username,
+      isAdmin: username.toLowerCase() === 'admin' || username === 'អ្នកគ្រប់គ្រង'
+    };
+    
+    localStorage.setItem('schoolAdminUser', JSON.stringify(currentUser));
+    showApp();
+    
+    // Reset loading state
+    document.getElementById('loginText').classList.remove('d-none');
+    document.getElementById('loginLoading').classList.add('d-none');
+  }
+  
+  // Show main application
+  function showApp() {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    
+    // Update username display
+    document.getElementById('currentUsername').textContent = currentUser.username;
+    
+    // Show/hide admin elements
+    const adminElements = document.querySelectorAll('.admin-only');
+    adminElements.forEach(el => {
+      if (currentUser.isAdmin) {
+        el.style.display = 'flex';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+    
+    // Load dashboard by default
+    showSection('dashboard');
+  }
+  
+  // Show section
+  function showSection(sectionId) {
+    // Hide all sections
+    document.querySelectorAll('.section').forEach(section => {
+      section.style.display = 'none';
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.app-navbar .btn').forEach(btn => {
+      btn.classList.remove('active', 'bg-primary', 'text-white');
+    });
+    
+    // Show selected section
+    document.getElementById(sectionId + 'Section').style.display = 'block';
+    
+    // Set active button
+    const activeButton = document.getElementById('btn' + sectionId.charAt(0).toUpperCase() + sectionId.slice(1));
+    if (activeButton) {
+      activeButton.classList.add('active', 'bg-primary', 'text-white');
+    }
+    
+    // Load section data
+    switch(sectionId) {
+      case 'dashboard':
+        loadDashboard();
+        break;
+      case 'students':
+        loadStudents();
+        break;
+      case 'report':
+        loadReport();
+        break;
+    }
+  }
+  
+  // Load dashboard data
+  function loadDashboard() {
+    // Sample stats data
+    const statsData = {
+      totalStudents: 1245,
+      totalTeachers: 38,
+      totalClasses: 23,
+      monthlyRevenue: 12250000,
+      attendanceRate: 95.2
+    };
+    
+    const stats = [
+      { 
+        title: 'សិស្សសរុប', 
+        value: KhmerUtils.toKhmerNumber(statsData.totalStudents), 
+        icon: 'bi-people-fill', 
+        color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+      },
+      { 
+        title: 'គ្រូអ្នកគ្រូ', 
+        value: KhmerUtils.toKhmerNumber(statsData.totalTeachers), 
+        icon: 'bi-person-badge-fill', 
+        color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' 
+      },
+      { 
+        title: 'ថ្នាក់សិក្សា', 
+        value: KhmerUtils.toKhmerNumber(statsData.totalClasses), 
+        icon: 'bi-building-fill', 
+        color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' 
+      },
+      { 
+        title: 'ចំណូលខែនេះ', 
+        value: KhmerUtils.formatCurrency(statsData.monthlyRevenue),
+        icon: 'bi-cash-stack', 
+        color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' 
+      }
+    ];
+    
+    // Render stats cards
+    let statsHTML = '';
+    stats.forEach((stat, index) => {
+      statsHTML += `
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="stat-card" style="background: ${stat.color}">
+            <i class="bi ${stat.icon}"></i>
+            <h4 class="fw-bold khmer-number">${stat.value}</h4>
+            <p class="khmer-text">${stat.title}</p>
+          </div>
+        </div>
+      `;
+    });
+    document.getElementById('statsRow').innerHTML = statsHTML;
+    
+    // Load teacher data
+    loadTeachers();
+    
+    // Load recent activities
+    loadRecentActivities();
+  }
+  
+  // Load teacher data
+  function loadTeachers() {
+    teachers = [
+      { name: 'កែមលៀងគា', students: 45, grade: '១០ ក', fee: 120 },
+      { name: 'ម៉ៅ សុភ័ក្រ', students: 38, grade: '៩ ខ', fee: 110 },
+      { name: 'វ៉ាន់ សុធារី', students: 42, grade: '១១ ក', fee: 130 },
+      { name: 'ហ៊ុន សែន', students: 35, grade: '១២ ខ', fee: 150 },
+      { name: 'សុខ សំអាត', students: 40, grade: '១០ ខ', fee: 125 },
+      { name: 'មាស សុផាត', students: 33, grade: '១១ ខ', fee: 135 }
+    ];
+    
+    const teacherTable = document.getElementById('teacherTable');
+    teacherTable.innerHTML = `
+      <thead class="table-light">
+        <tr>
+          <th class="khmer-text">គ្រូ</th>
+          <th class="khmer-text text-center">ចំនួនសិស្ស</th>
+          <th class="khmer-text text-center">ថ្នាក់</th>
+          <th class="khmer-text text-center">តម្លៃជាមធ្យម ($)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${teachers.map(teacher => `
+          <tr>
+            <td class="fw-bold khmer-text">${teacher.name}</td>
+            <td class="text-center khmer-number">${KhmerUtils.toKhmerNumber(teacher.students)}</td>
+            <td class="text-center khmer-text">${teacher.grade}</td>
+            <td class="text-center khmer-number">${KhmerUtils.toKhmerNumber(teacher.fee)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    `;
+  }
+  
+  // Load recent activities
+  function loadRecentActivities() {
+    const activities = [
+      { type: 'student', action: 'បានបញ្ចូល', name: 'យាយ សុខុម', time: 'ម៉ោង ១០:៣០ ព្រឹក' },
+      { type: 'payment', action: 'បានទូទាត់', name: 'គឹម សុខន', amount: '១២០$', time: 'ម៉ោង ០៩:១៥ ព្រឹក' },
+      { type: 'attendance', action: 'វត្តមាន', name: 'ថ្នាក់ ១០ ក', present: '៤៥/៤៥', time: 'ម៉ោង ០៨:០០ ព្រឹក' },
+      { type: 'update', action: 'បានកែសម្រួល', name: 'ព័ត៌មានសិស្ស', time: 'ម្សិលមិញ' },
+      { type: 'report', action: 'បានបោះពុម្ព', name: 'របាយការណ៍ខែ', time: 'ម្សិលមិញ' }
+    ];
+    
+    const activitiesHTML = activities.map(activity => `
+      <div class="list-group-item border-0 px-0 py-3">
+        <div class="d-flex align-items-start">
+          <div class="flex-shrink-0">
+            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+              <i class="bi bi-${activity.type === 'student' ? 'person-plus' : activity.type === 'payment' ? 'cash' : activity.type === 'attendance' ? 'calendar-check' : 'pencil'} text-primary"></i>
+            </div>
+          </div>
+          <div class="flex-grow-1 ms-3">
+            <div class="d-flex justify-content-between">
+              <h6 class="mb-1 khmer-text">${activity.action} ${activity.name}</h6>
+              <small class="text-muted">${activity.time}</small>
+            </div>
+            <p class="mb-0 text-muted small khmer-text">
+              ${activity.amount ? 'ទឹកប្រាក់: ' + activity.amount : ''}
+              ${activity.present ? 'វត្តមាន: ' + activity.present : ''}
+            </p>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    
+    document.getElementById('recentActivities').innerHTML = activitiesHTML;
+  }
+  
+  // Load students
+  function loadStudents() {
+    // Sample student data
+    students = [
+      { id: 1, name: 'យាយ សុខុម', gender: 'ប្រុស', grade: '១០ ក', teacher: 'កែមលៀងគា', fee: 120, joined: '2024-01-15' },
+      { id: 2, name: 'ផល្លី សុផល', gender: 'ស្រី', grade: '៩ ខ', teacher: 'ម៉ៅ សុភ័ក្រ', fee: 110, joined: '2024-02-10' },
+      { id: 3, name: 'វណ្ណា សុខា', gender: 'ស្រី', grade: '១១ ក', teacher: 'វ៉ាន់ សុធារី', fee: 130, joined: '2024-01-20' },
+      { id: 4, name: 'សុខ សេរី', gender: 'ប្រុស', grade: '១២ ខ', teacher: 'ហ៊ុន សែន', fee: 150, joined: '2024-03-05' },
+      { id: 5, name: 'គឹម សុខន', gender: 'ប្រុស', grade: '១០ ក', teacher: 'កែមលៀងគា', fee: 120, joined: '2024-02-28' },
+      { id: 6, name: 'នារី សុជាតា', gender: 'ស្រី', grade: '៩ ខ', teacher: 'ម៉ៅ សុភ័ក្រ', fee: 110, joined: '2024-03-15' },
+      { id: 7, name: 'មាស សុភាព', gender: 'ប្រុស', grade: '១១ ក', teacher: 'វ៉ាន់ សុធារី', fee: 130, joined: '2024-01-25' },
+      { id: 8, name: 'វិទ្យា សុវណ្ណ', gender: 'ស្រី', grade: '១២ ខ', teacher: 'ហ៊ុន សែន', fee: 150, joined: '2024-02-14' }
+    ];
+    
+    renderStudents();
+  }
+  
+  // Render students
+  function renderStudents() {
+    const studentBody = document.getElementById('studentBody');
+    studentBody.innerHTML = students.map((student, index) => `
+      <tr>
+        <td class="text-center khmer-number">${KhmerUtils.toKhmerNumber(index + 1)}</td>
+        <td>
+          <div class="fw-bold khmer-text">${student.name}</div>
+          <small class="text-muted">ចូលថ្ងៃទី: ${student.joined}</small>
+        </td>
+        <td class="text-center">
+          <span class="badge ${student.gender === 'ប្រុស' ? 'bg-primary' : 'bg-pink'}">
+            ${student.gender}
+          </span>
+        </td>
+        <td class="text-center khmer-text">${student.grade}</td>
+        <td class="text-center khmer-text">${student.teacher}</td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-outline-primary me-1" onclick="editStudent(${student.id})" title="កែសម្រួល">
+            <i class="bi bi-pencil"></i>
+          </button>
+          ${currentUser.isAdmin ? `
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent(${student.id})" title="លុប">
+              <i class="bi bi-trash"></i>
+            </button>
+          ` : ''}
+        </td>
+      </tr>
+    `).join('');
+    
+    // Update student count
+    document.getElementById('studentCount').textContent = KhmerUtils.toKhmerNumber(students.length);
+  }
+  
+  // Filter students
+  function filterStudents() {
+    const searchTerm = document.getElementById('studentSearch').value.toLowerCase();
+    const gradeFilter = document.getElementById('gradeFilter').value;
+    
+    const filteredStudents = students.filter(student => {
+      const matchesSearch = student.name.toLowerCase().includes(searchTerm) ||
+                           student.grade.toLowerCase().includes(searchTerm) ||
+                           student.teacher.toLowerCase().includes(searchTerm);
+      const matchesGrade = !gradeFilter || student.grade === gradeFilter;
+      
+      return matchesSearch && matchesGrade;
+    });
+    
+    const studentBody = document.getElementById('studentBody');
+    studentBody.innerHTML = filteredStudents.map((student, index) => `
+      <tr>
+        <td class="text-center khmer-number">${KhmerUtils.toKhmerNumber(index + 1)}</td>
+        <td>
+          <div class="fw-bold khmer-text">${student.name}</div>
+          <small class="text-muted">ចូលថ្ងៃទី: ${student.joined}</small>
+        </td>
+        <td class="text-center">
+          <span class="badge ${student.gender === 'ប្រុស' ? 'bg-primary' : 'bg-pink'}">
+            ${student.gender}
+          </span>
+        </td>
+        <td class="text-center khmer-text">${student.grade}</td>
+        <td class="text-center khmer-text">${student.teacher}</td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-outline-primary me-1" onclick="editStudent(${student.id})" title="កែសម្រួល">
+            <i class="bi bi-pencil"></i>
+          </button>
+          ${currentUser.isAdmin ? `
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent(${student.id})" title="លុប">
+              <i class="bi bi-trash"></i>
+            </button>
+          ` : ''}
+        </td>
+      </tr>
+    `).join('');
+  }
+  
+  // Open student modal
+  function openStudentModal(studentId = null) {
+    const modal = new bootstrap.Modal(document.getElementById('studentModal'));
+    const modalTitle = document.getElementById('modalTitle');
+    
+    if (studentId) {
+      // Edit mode
+      modalTitle.textContent = 'កែសម្រួលព័ត៌មានសិស្ស';
+      const student = students.find(s => s.id === studentId);
+      if (student) {
+        document.getElementById('addStudentName').value = student.name;
+        document.getElementById('addGender').value = student.gender;
+        document.getElementById('addGrade').value = student.grade;
+        document.getElementById('addTeacherSelect').value = student.teacher;
+        document.getElementById('addFee').value = student.fee;
+        document.getElementById('addStudentName').setAttribute('data-student-id', studentId);
+      }
+    } else {
+      // Add mode
+      modalTitle.textContent = 'បញ្ចូលសិស្សថ្មី';
+      document.getElementById('addStudentName').value = '';
+      document.getElementById('addGender').value = 'ប្រុស';
+      document.getElementById('addGrade').value = '១០ ក';
+      document.getElementById('addTeacherSelect').value = 'កែមលៀងគា';
+      document.getElementById('addFee').value = 120;
+      document.getElementById('addStudentName').removeAttribute('data-student-id');
+    }
+    
+    modal.show();
+  }
+  
+  // Submit student
+  async function submitStudent() {
+    const name = document.getElementById('addStudentName').value.trim();
+    const gender = document.getElementById('addGender').value;
+    const grade = document.getElementById('addGrade').value.trim();
+    const teacher = document.getElementById('addTeacherSelect').value;
+    const fee = parseFloat(document.getElementById('addFee').value);
+    const studentId = document.getElementById('addStudentName').getAttribute('data-student-id');
+    
+    // Validation
+    if (!name) {
+      Swal.fire({ icon: 'warning', title: 'សូមបំពេញ', text: 'សូមបំពេញឈ្មោះសិស្ស', confirmButtonText: 'យល់ព្រម' });
+      return;
+    }
+    
+    if (!grade) {
+      Swal.fire({ icon: 'warning', title: 'សូមបំពេញ', text: 'សូមបំពេញថ្នាក់សិក្សា', confirmButtonText: 'យល់ព្រម' });
+      return;
+    }
+    
+    if (!fee || fee <= 0) {
+      Swal.fire({ icon: 'warning', title: 'សូមបំពេញ', text: 'សូមបំពេញតម្លៃសិក្សាត្រឹមត្រូវ', confirmButtonText: 'យល់ព្រម' });
+      return;
+    }
+    
+    // Show loading
+    document.getElementById('saveText').classList.add('d-none');
+    document.getElementById('saveLoading').classList.remove('d-none');
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    if (studentId) {
+      // Update existing student
+      const index = students.findIndex(s => s.id === parseInt(studentId));
+      if (index !== -1) {
+        students[index] = { 
+          ...students[index], 
+          name, 
+          gender, 
+          grade, 
+          teacher, 
+          fee 
+        };
+      }
+    } else {
+      // Add new student
+      const newId = students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1;
+      const today = new Date().toISOString().split('T')[0];
+      
+      students.push({
+        id: newId,
+        name,
+        gender,
+        grade,
+        teacher,
+        fee,
+        joined: today
+      });
+    }
+    
+    renderStudents();
+    
+    // Hide modal
+    bootstrap.Modal.getInstance(document.getElementById('studentModal')).hide();
+    
+    // Reset loading state
+    document.getElementById('saveText').classList.remove('d-none');
+    document.getElementById('saveLoading').classList.add('d-none');
+    
+    // Show success message
+    Swal.fire({
+      icon: 'success',
+      title: 'ជោគជ័យ',
+      text: studentId ? 'ព័ត៌មានសិស្សត្រូវបានកែសម្រួលដោយជោគជ័យ' : 'សិស្សថ្មីត្រូវបានបញ្ចូលដោយជោគជ័យ',
+      confirmButtonText: 'យល់ព្រម',
+      timer: 2000
+    });
+  }
+  
+  // Edit student
+  function editStudent(id) {
+    openStudentModal(id);
+  }
+  
+  // Delete student
+  function deleteStudent(id) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'តើអ្នកពិតជាចង់លុបសិស្សនេះមែនទេ?',
+      text: 'សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។',
+      showCancelButton: true,
+      confirmButtonText: 'បាទ/ចាស លុប',
+      cancelButtonText: 'ទេ បោះបង់',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        students = students.filter(student => student.id !== id);
+        renderStudents();
+        Swal.fire({
+          icon: 'success',
+          title: 'បានលុប',
+          text: 'សិស្សត្រូវបានលុបដោយជោគជ័យ',
+          timer: 1500
+        });
+      }
+    });
+  }
+  
+  // Export to Excel
+  function exportToExcel() {
+    const ws = XLSX.utils.json_to_sheet(students.map(s => ({
+      'ល.រ': s.id,
+      'ឈ្មោះសិស្ស': s.name,
+      'ភេទ': s.gender,
+      'ថ្នាក់': s.grade,
+      'គ្រូ': s.teacher,
+      'តម្លៃសិក្សា ($)': s.fee,
+      'ថ្ងៃចូល': s.joined
+    })));
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'សិស្ស');
+    XLSX.writeFile(wb, `សិស្ស_${new Date().toISOString().split('T')[0]}.xlsx`);
+  }
+  
+  // Load report
+  function loadReport() {
+    const startDate = document.getElementById('reportStartDate').value;
+    const endDate = document.getElementById('reportEndDate').value;
+    
+    // Format date range display
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const dateRangeText = `ពីថ្ងៃទី ${KhmerUtils.formatDate(start)} ដល់ ថ្ងៃទី ${KhmerUtils.formatDate(end)}`;
+    document.getElementById('reportDateRange').textContent = dateRangeText;
+    
+    // Sample report data
+    reports = [
+      { date: '2024-12-01', totalStudents: 1245, present: 1200, absent: 45, income: 24500000 },
+      { date: '2024-12-02', totalStudents: 1245, present: 1210, absent: 35, income: 25000000 },
+      { date: '2024-12-03', totalStudents: 1245, present: 1190, absent: 55, income: 23000000 },
+      { date: '2024-12-04', totalStudents: 1245, present: 1220, absent: 25, income: 26000000 },
+      { date: '2024-12-05', totalStudents: 1245, present: 1205, absent: 40, income: 24000000 }
+    ];
+    
+    // Calculate totals
+    const totals = reports.reduce((acc, report) => {
+      acc.totalPresent += report.present;
+      acc.totalAbsent += report.absent;
+      acc.totalIncome += report.income;
+      return acc;
+    }, { totalPresent: 0, totalAbsent: 0, totalIncome: 0 });
+    
+    // Render report headers
+    document.getElementById('reportHead').innerHTML = `
+      <th class="khmer-text">កាលបរិច្ឆេទ</th>
+      <th class="khmer-text">សិស្សសរុប</th>
+      <th class="khmer-text">មករៀន</th>
+      <th class="khmer-text">អវត្តមាន</th>
+      <th class="khmer-text">ចំណូល</th>
+    `;
+    
+    // Render report body
+    document.getElementById('reportBody').innerHTML = reports.map(report => {
+      const date = new Date(report.date);
+      const formattedDate = `${KhmerUtils.toKhmerNumber(date.getDate())}/${KhmerUtils.toKhmerNumber(date.getMonth() + 1)}/${KhmerUtils.toKhmerNumber(date.getFullYear())}`;
+      
+      return `
+        <tr class="text-center">
+          <td class="khmer-text">${formattedDate}</td>
+          <td class="khmer-number">${KhmerUtils.toKhmerNumber(report.totalStudents)}</td>
+          <td>
+            <span class="badge bg-success">${KhmerUtils.toKhmerNumber(report.present)}</span>
+          </td>
+          <td>
+            <span class="badge bg-danger">${KhmerUtils.toKhmerNumber(report.absent)}</span>
+          </td>
+          <td class="fw-bold khmer-number">${KhmerUtils.formatCurrency(report.income)}</td>
+        </tr>
+      `;
+    }).join('');
+    
+    // Render footer with totals
+    document.getElementById('reportFooter').innerHTML = `
+      <tr class="table-active fw-bold">
+        <td colspan="2" class="khmer-text text-end">សរុប:</td>
+        <td class="text-center khmer-number">${KhmerUtils.toKhmerNumber(totals.totalPresent)}</td>
+        <td class="text-center khmer-number">${KhmerUtils.toKhmerNumber(totals.totalAbsent)}</td>
+        <td class="text-center khmer-number">${KhmerUtils.formatCurrency(totals.totalIncome)}</td>
+      </tr>
+    `;
+  }
+  
+  // Export report to Excel
+  function exportReportToExcel() {
+    if (reports.length === 0) {
+      Swal.fire({ icon: 'warning', title: 'ទិន្នន័យរវាង', text: 'សូមបង្កើតរបាយការណ៍មុននឹងទាញយក', confirmButtonText: 'យល់ព្រម' });
+      return;
+    }
+    
+    const ws = XLSX.utils.json_to_sheet(reports.map(r => {
+      const date = new Date(r.date);
+      return {
+        'កាលបរិច្ឆេទ': date.toLocaleDateString('km-KH'),
+        'សិស្សសរុប': r.totalStudents,
+        'មករៀន': r.present,
+        'អវត្តមាន': r.absent,
+        'ចំណូល (៛)': r.income
+      };
+    }));
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'របាយការណ៍');
+    XLSX.writeFile(wb, `របាយការណ៍_${new Date().toISOString().split('T')[0]}.xlsx`);
+  }
+  
+  // Print report
+  function printReport() {
+    const printContent = document.getElementById('printableArea').innerHTML;
+    const originalContent = document.body.innerHTML;
+    
+    document.body.innerHTML = `
+      <!DOCTYPE html>
+      <html lang="km">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Print Report</title>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+          body { font-family: 'Noto Serif Khmer', sans-serif; padding: 20px; }
+          .print-header { text-align: center; margin-bottom: 30px; }
+          .print-footer { margin-top: 50px; text-align: center; font-size: 0.9rem; }
+          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+          th { background-color: #f0f0f0; }
+          @media print {
+            .no-print { display: none; }
+            body { padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        ${printContent}
+        <div class="print-footer">
+          <p>ថ្ងៃបោះពុម្ព: ${KhmerUtils.formatDate(new Date())}</p>
+        </div>
+        <script>
+          window.onload = function() {
+            window.print();
+            setTimeout(function() {
+              window.location.reload();
+            }, 100);
+          }
+        <\/script>
+      </body>
+      </html>
+    `;
+  }
+  
+  // Logout
+  function logout() {
+    Swal.fire({
+      icon: 'question',
+      title: 'តើអ្នកពិតជាចង់ចាកចេញមែនទេ?',
+      showCancelButton: true,
+      confirmButtonText: 'បាទ/ចាស ចាកចេញ',
+      cancelButtonText: 'ទេ នៅតែបន្ត',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem('schoolAdminUser');
+        currentUser = null;
+        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('loginSection').style.display = 'flex';
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+      }
+    });
+  }
+  
+  // Initialize the app when page loads
+  window.onload = initApp;
+</script>
 </body>
 </html>
