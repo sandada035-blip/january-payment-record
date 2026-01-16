@@ -1,62 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>School Admin Pro</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>School Admin Pro - Vercel</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Serif+Khmer:wght@400;700&display=swap" rel="stylesheet">
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+Khmer:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
-
 <body>
 
-<!-- LOGIN -->
 <div id="loginSection" class="login-wrapper">
   <div class="login-card">
     <div class="login-icon-box"><i class="bi bi-mortarboard-fill"></i></div>
-    <h4 class="fw-bold">School Dashboard</h4>
-
-    <div class="form-floating mb-3">
-      <input id="username" class="form-control" placeholder="Username">
-      <label>Username</label>
-    </div>
-
-    <div class="form-floating mb-3">
-      <input id="password" type="password" class="form-control" placeholder="Password">
-      <label>Password</label>
-    </div>
-
-    <button class="btn btn-primary w-100 py-2" onclick="login()">LOGIN</button>
+    <h3 class="fw-bold mb-1">PREAH REACH AKK MOHESSEY</h3>
+    <p class="text-muted mb-4 small">Dashboard Access</p>
+    <div class="form-floating mb-3"><input type="text" id="username" class="form-control" placeholder="User"><label>Username</label></div>
+    <div class="form-floating mb-4"><input type="password" id="password" class="form-control" placeholder="Pass"><label>Password</label></div>
+    <button class="btn btn-primary w-100 btn-login" onclick="login()">LOGIN</button>
   </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="mainApp" style="display:none">
-  <nav class="navbar bg-white shadow-sm px-3">
-    <span class="fw-bold text-primary">Dashboard</span>
-    <button class="btn btn-sm btn-outline-danger" onclick="logout()">Logout</button>
+<div id="mainApp" style="display:none;">
+  <nav class="app-navbar bg-white p-3 shadow-sm d-flex justify-content-between sticky-top">
+    <h5 class="m-0 fw-bold text-primary"><i class="bi bi-grid-fill"></i> Dashboard</h5>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-light" onclick="showSection('dashboard')">Home</button>
+      <button class="btn btn-sm btn-light" onclick="showSection('students')">Students</button>
+      <button class="btn btn-sm btn-outline-danger" onclick="logout()">Logout</button>
+    </div>
   </nav>
 
-  <div class="container mt-3">
-    <h6 class="fw-bold mb-2">Students</h6>
+  <div id="dashboardSection" class="container-fluid p-3">
+    <div class="row g-3" id="statsRow">
+        </div>
+    <div class="content-box mt-4">
+      <div class="p-3 border-bottom"><h6 class="fw-bold m-0">Teacher Summary</h6></div>
+      <div class="table-responsive">
+          <table class="table table-hover mb-0" id="teacherTable">
+              <thead class="table-light">
+                  <tr><th>គ្រូ</th><th>ភេទ</th><th>សិស្ស</th><th>តម្លៃសរុប</th><th>៨០%</th><th>២០%</th></tr>
+              </thead>
+              <tbody id="teacherBody"></tbody>
+          </table>
+      </div>
+    </div>
+  </div>
 
-    <input class="form-control mb-2" placeholder="Search..." id="studentSearch" onkeyup="filterStudents()">
 
+<div id="studentSection" class="container-fluid p-3" style="display:none;">
+  <div class="content-box">
+    <div class="p-3 border-bottom">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold m-0">Student Records</h5>
+        <div class="d-flex gap-2">
+          <button class="btn btn-success btn-sm" onclick="exportToExcel()"><i class="bi bi-file-earmark-excel"></i> Export Excel</button>
+          <button class="btn btn-primary btn-sm" onclick="openStudentModal()">+ Add New</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+        <input type="text" id="studentSearch" class="form-control border-start-0" placeholder="ស្វែងរកឈ្មោះសិស្ស ឬគ្រូ..." onkeyup="filterStudents()">
+      </div>
+    </div>
+    
     <div class="table-responsive">
-      <table class="table table-bordered table-hover" id="studentTableMain">
-        <thead class="table-light">
+      <table class="table table-hover mb-0" id="studentTableMain">
+        <thead>
           <tr>
-            <th>Name</th>
-            <th>Teacher</th>
-            <th>Fee</th>
-            <th class="text-center">Action</th>
+            <th>ឈ្មោះ</th>
+            <th>ភេទ</th>
+            <th>ថ្នាក់</th>
+            <th>គ្រូ</th>
+            <th>តម្លៃ</th>
+            <th class="text-center">សកម្មភាព</th>
           </tr>
         </thead>
         <tbody id="studentBody"></tbody>
@@ -65,6 +84,58 @@
   </div>
 </div>
 
+
+
+  <div id="studentSection" class="container-fluid p-3" style="display:none;">
+    <div class="content-box">
+      <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold m-0">Student Records</h5>
+        <button class="btn btn-primary btn-sm" onclick="openStudentModal()">+ Add New</button>
+      </div>
+      <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead><tr><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្នាក់</th><th>គ្រូ</th><th>តម្លៃ</th><th>សកម្មភាព</th></tr></thead>
+            <tbody id="studentBody"></tbody>
+          </table>
+      </div>
+      <div id="studentLoading" class="text-center p-5 d-none"><div class="spinner-border text-primary"></div></div>
+    </div>
+  </div>
+
+  <button id="fabBtn" class="fab-btn" onclick="openStudentModal()"><i class="bi bi-plus-lg"></i></button>
+</div>
+
+<div class="modal fade" id="studentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header border-0"><h5 class="fw-bold" id="modalTitle">បញ្ចូលសិស្សថ្មី</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body p-4">
+        <input type="hidden" id="editOriginalName">
+        <div class="form-floating mb-3"><input type="text" id="addStudentName" class="form-control"><label>ឈ្មោះសិស្ស</label></div>
+        <div class="row g-2 mb-3">
+          <div class="col-6"><div class="form-floating"><select id="addGender" class="form-select"><option value="Male">ប្រុស</option><option value="Female">ស្រី</option></select><label>ភេទ</label></div></div>
+          <div class="col-6"><div class="form-floating"><input type="text" id="addGrade" class="form-control" placeholder="ថ្នាក់"><label>ថ្នាក់</label></div></div>
+        </div>
+        <div class="form-floating mb-3">
+          <select id="addTeacherSelect" class="form-select">
+            <option value="កែមលៀងគា">កែមលៀងគា</option><option value="ប្រាក់ប្រសើ">ប្រាក់ប្រសើ</option>
+            <option value="ស្រេងស្រីម៉ី">ស្រេងស្រីម៉ី</option><option value="ថាស្បៃរឿង">ថាស្បៃរឿង</option>
+            <option value="ស្រីសុផានី">ស្រីសុផានី</option><option value="ណុនផាន់ណី">ណុនផាន់ណី</option>
+          </select>
+          <label>ជ្រើសរើសគ្រូ</label>
+        </div>
+        <div class="form-floating mb-3"><input type="number" id="addFee" class="form-control"><label>តម្លៃសិក្សា</label></div>
+        <div class="p-3 bg-light rounded mb-3 d-flex justify-content-between">
+            <div><small class="text-muted d-block">គ្រូ ៨០%</small><strong id="disp80" class="text-primary">0 ៛</strong></div>
+            <div><small class="text-muted d-block">សាលា ២០%</small><strong id="disp20" class="text-danger">0 ៛</strong></div>
+        </div>
+        <button id="submitBtn" class="btn btn-primary w-100 py-3 fw-bold" onclick="submitStudent()">រក្សាទុក</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
