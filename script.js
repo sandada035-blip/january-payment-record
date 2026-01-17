@@ -230,10 +230,9 @@ function printReport(sectionId) {
 
 // មុខងារ Print របាយការណ៍សិស្ស (កែសម្រួលថ្មីតាមរូបភាព)
 function printReport() {
-    const printWindow = window.open('', '', 'height=800,width=1000');
-    const now = new Date();
-    const dateStr = "អគ្គមហេសី, ថ្ងៃទី" + now.getDate() + " ខែមករា ឆ្នាំ" + now.getFullYear();
-
+    const printWindow = window.open('', '', 'height=900,width=1000');
+    
+    // បង្កើតជួរដេកតារាង
     let tableRows = allStudents.map(r => `
         <tr>
             <td style="border: 1px solid black; padding: 8px; text-align: left;">${r[0]}</td>
@@ -247,37 +246,55 @@ function printReport() {
     const reportHTML = `
         <html>
         <head>
-            <title>Student Report</title>
+            <title>Student Report Print</title>
             <link href="https://fonts.googleapis.com/css2?family=Khmer+OS+Siemreap&family=Khmer+OS+Muol+Light&display=swap" rel="stylesheet">
             <style>
-                body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 40px; }
-                .header-title { font-family: 'Khmer OS Muol Light', serif; text-align: center; font-size: 20px; margin-bottom: 5px; }
-                .sub-title { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; }
-                .date-location { text-align: right; font-size: 14px; margin-bottom: 5px; margin-right: 50px; }
+                body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 30px; color: black; }
                 
-                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                /* Header ផ្នែក Logo និងឈ្មោះសាលា */
+                .top-header { display: flex; align-items: center; margin-bottom: 20px; }
+                .logo-box { width: 80px; height: 80px; margin-right: 15px; }
+                .logo-box img { width: 100%; height: auto; }
+                .school-name { font-family: 'Khmer OS Muol Light'; font-size: 16px; }
+
+                /* ចំណងជើងរបាយការណ៍ */
+                .report-title { font-family: 'Khmer OS Muol Light'; text-align: center; font-size: 20px; margin-top: 10px; }
+                .report-subtitle { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; text-decoration: underline; }
+
+                /* តារាង */
+                table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
                 th { border: 1px solid black; padding: 10px; background-color: #f2f2f2; font-family: 'Khmer OS Siemreap'; }
                 
-                .signature-section { margin-top: 50px; display: flex; justify-content: space-between; padding: 0 50px; }
-                .sig-block { text-align: center; width: 200px; }
-                .sig-title { font-weight: bold; margin-bottom: 60px; }
-                .sig-name { font-weight: bold; }
+                /* ផ្នែកហត្ថលេខា និងកាលបរិច្ឆេទខាងក្រោម */
+                .footer-section { margin-top: 20px; width: 100%; }
+                .date-line { text-align: right; font-size: 14px; margin-bottom: 20px; margin-right: 30px; }
+                
+                .sig-container { display: flex; justify-content: space-between; padding: 0 40px; }
+                .sig-block { text-align: center; width: 250px; }
+                .sig-title { font-family: 'Khmer OS Muol Light'; font-size: 14px; margin-bottom: 60px; line-height: 1.8; }
+                .sig-dots { border-bottom: 1px dotted black; width: 180px; margin: 0 auto 10px; }
+                .sig-name { font-family: 'Khmer OS Siemreap'; font-weight: bold; }
             </style>
         </head>
         <body>
-            <div class="header-title">បញ្ជីឈ្មោះសិស្សរៀនបំប៉នបន្ថែម</div>
-            <div class="sub-title">Student Records</div>
-            
-            <div class="date-location">${dateStr}</div>
+            <div class="top-header">
+                <div class="logo-box">
+                    <img src="https://via.placeholder.com/80" alt="Logo"> 
+                </div>
+                <div class="school-name">សាលារៀនព្រះរាជអគ្គមហេសី/PREAH REACH AKK MOHESSEY</div>
+            </div>
+
+            <div class="report-title">បញ្ជីឈ្មោះសិស្សរៀនបំប៉នបន្ថែម</div>
+            <div class="report-subtitle">Student Records</div>
             
             <table>
                 <thead>
                     <tr>
-                        <th>ឈ្មោះ</th>
-                        <th>ភេទ</th>
-                        <th>ថ្នាក់</th>
-                        <th>គ្រូ</th>
-                        <th>តម្លៃ</th>
+                        <th style="width: 25%;">ឈ្មោះ</th>
+                        <th style="width: 10%;">ភេទ</th>
+                        <th style="width: 15%;">ថ្នាក់</th>
+                        <th style="width: 25%;">គ្រូ</th>
+                        <th style="width: 25%;">តម្លៃ</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -285,16 +302,23 @@ function printReport() {
                 </tbody>
             </table>
 
-            <div class="signature-section">
-                <div class="sig-block">
-                    <div class="sig-title">បានឃើញ និងឯកភាព<br>នាយកសាលា</div>
-                    <div style="border-bottom: 1px solid black; width: 150px; margin: 0 auto 10px;"></div>
+            <div class="footer-section">
+                <div class="date-line">
+                    ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦<br>
+                    ធ្វើនៅបន្ទាយ រាំងជៃ នៃ បន្ទាយរៃ
                 </div>
-                <div class="sig-block">
-                    <div class="sig-title" style="margin-bottom: 10px;">អ្នកចេញវិក្កយបត្រ</div>
-                    <div style="margin-bottom: 60px;"></div>
-                    <div style="border-bottom: 1px solid black; width: 150px; margin: 0 auto 10px;"></div>
-                    <div class="sig-name">ហាម ម៉ាលីនដា</div>
+                
+                <div class="sig-container">
+                    <div class="sig-block">
+                        <div class="sig-title">បានពិនិត្យ និងឯកភាព<br>នាយកសាលា</div>
+                        <div class="sig-dots"></div>
+                    </div>
+                    
+                    <div class="sig-block">
+                        <div class="sig-title">អ្នកចេញវិក្កយបត្រ</div>
+                        <div class="sig-dots"></div>
+                        <div class="sig-name">តាម ម៉ាលីនដា</div>
+                    </div>
                 </div>
             </div>
 
@@ -357,5 +381,6 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
