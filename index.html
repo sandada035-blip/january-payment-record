@@ -3,42 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>School Admin Pro - Vercel</title>
+  <title>School Admin Pro - Preah Reach Akk Mohessey</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+Khmer:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+Khmer:wght@400;700&family=Khmer+OS+Siemreap&family=Khmer+OS+Muol+Light&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
-    /* បន្ថែម Style សម្រាប់ការបោះពុម្ព (Print Style) */
-    @media print {
-      .app-navbar, .btn, .fab-btn, .modal, .login-wrapper {
-        display: none !important; /* លាក់ប៊ូតុង និង Navbar ពេលបោះពុម្ព */
-      }
-      .content-box {
-        border: none !important;
-        box-shadow: none !important;
-      }
-      body {
-        background-color: white !important;
-        padding: 0 !important;
-      }
-      .table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-      }
-      .table th, .table td {
-        border: 1px solid #dee2e6 !important;
-        padding: 8px !important;
-      }
-      .print-header {
-        display: block !important;
-        text-align: center;
-        margin-bottom: 20px;
-      }
+    /* បន្ថែមការរចនាសម្រាប់ Login Section */
+    #loginSection {
+        transition: all 0.5s ease;
     }
-    .print-header { display: none; } /* លាក់ Header ពេលមើលលើ Screen */
+    
+    /* កែលម្អការបោះពុម្ព (Print Logic) */
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+      .no-print { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -67,21 +51,24 @@
 </section>
 
 <div id="mainApp" style="display:none;">
+  <nav class="app-navbar bg-white p-3 shadow-sm d-flex justify-content-between sticky-top no-print">
+    <h5 class="m-0 fw-bold text-primary"><i class="bi bi-grid-fill"></i> Dashboard</h5>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-light" onclick="showSection('dashboard')">Home</button>
+      <button class="btn btn-sm btn-light" onclick="showSection('students')">Students</button>
+      <button class="btn btn-sm btn-outline-danger" onclick="logout()">
+          <i class="bi bi-box-arrow-left"></i> Logout
+      </button>
     </div>
-
+  </nav>
 
   <div id="dashboardSection" class="container-fluid p-3">
-    <div class="print-header">
-        <h2 class="fw-bold">របាយការណ៍សរុបគ្រូបង្រៀន</h2>
-        <p>កាលបរិច្ឆេទ៖ <span id="printDate"></span></p>
-    </div>
-
     <div class="row g-3" id="statsRow"></div>
     
     <div class="content-box mt-4">
-      <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+      <div class="p-3 border-bottom d-flex justify-content-between align-items-center no-print">
         <h6 class="fw-bold m-0">Teacher Summary</h6>
-        <button class="btn btn-sm btn-dark" onclick="printReport('dashboardSection')">
+        <button class="btn btn-sm btn-dark" onclick="printReport()">
             <i class="bi bi-printer"></i> Print Report
         </button>
       </div>
@@ -97,14 +84,11 @@
   </div>
 
   <div id="studentSection" class="container-fluid p-3" style="display:none;">
-    <div class="print-header text-center">
-        <h2 class="fw-bold">បញ្ជីឈ្មោះសិស្ស</h2>
-    </div>
     <div class="content-box">
-      <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+      <div class="p-3 border-bottom d-flex justify-content-between align-items-center no-print">
         <h5 class="fw-bold m-0">Student Records</h5>
         <div class="d-flex gap-2">
-            <button class="btn btn-outline-dark btn-sm" onclick="printReport('studentSection')">
+            <button class="btn btn-outline-dark btn-sm" onclick="printReport()">
                 <i class="bi bi-printer"></i> Print
             </button>
             <button class="btn btn-primary btn-sm" onclick="openStudentModal()">+ Add New</button>
@@ -120,7 +104,7 @@
     </div>
   </div>
 
-  <button id="fabBtn" class="fab-btn" onclick="openStudentModal()"><i class="bi bi-plus-lg"></i></button>
+  <button id="fabBtn" class="fab-btn no-print" onclick="openStudentModal()"><i class="bi bi-plus-lg"></i></button>
 </div>
 
 <div class="modal fade" id="studentModal" tabindex="-1">
@@ -154,22 +138,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // មុខងារ Print
-    function printReport(sectionId) {
-        // ដាក់កាលបរិច្ឆេទបច្ចុប្បន្ន
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('km-KH') + " " + now.toLocaleTimeString('km-KH');
-        const printDateElem = document.getElementById('printDate');
-        if(printDateElem) printDateElem.innerText = dateStr;
-
-        // បញ្ជាឱ្យ Browser បោះពុម្ព
-        window.print();
-    }
-</script>
 <script src="script.js"></script>
 </body>
 </html>
-
-
-
