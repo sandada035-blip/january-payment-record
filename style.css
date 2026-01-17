@@ -1,47 +1,190 @@
-:root {
-    --primary: #4361ee;
-    --khmer-font: 'Khmer OS Siemreap', sans-serif;
+:root { 
+    --primary: #4361ee; 
+    --secondary: #3f37c9;
+    --success: #4cc9f0;
+    --danger: #ef4444;
+    --bg-body: #f8f9fa;
+    --font-khmer: 'Noto Serif Khmer', serif;
 }
 
-body {
-    font-family: 'Inter', var(--khmer-font);
-    background-color: #f8f9fa;
-    -webkit-tap-highlight-color: transparent;
+/* មូលដ្ឋានគ្រឹះ */
+body { 
+    background-color: var(--bg-body); 
+    font-family: 'Inter', sans-serif; 
+    overflow-x: hidden; 
+    -webkit-tap-highlight-color: transparent; /* ដកពណ៌ខៀវពេលចុចលើ Mobile */
 }
 
-/* Mobile Friendly Table */
-@media (max-width: 768px) {
-    #studentTable thead { display: none; }
-    #studentTable tbody tr {
-        display: block;
-        margin-bottom: 15px;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        padding: 10px;
+/* ការរចនាផ្ទាំង Login */
+/* Login Page Specific Styles */
+#loginSection {
+    background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%); /* Blue gradient background */
+}
+
+.login-container {
+    max-width: 450px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.8s ease-out; /* Simple fade-in animation */
+}
+
+.login-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.card-title {
+    color: #0d6efd; /* Bootstrap primary blue */
+}
+
+.form-label {
+    color: #343a40; /* Dark grey for labels */
+}
+
+.form-control {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* ការរចនា Dashboard & Cards */
+.content-box { 
+    background: white; 
+    border-radius: 16px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    overflow: hidden; 
+    margin-bottom: 1.5rem;
+}
+
+.stat-card { 
+    background: white; 
+    border-radius: 16px; 
+    padding: 1.25rem; 
+    border-left: 5px solid var(--primary); 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    height: 100%;
+}
+
+/* ប៊ូតុងរង្វង់បូក (FAB) */
+.fab-btn {
+    position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+    background: var(--primary); color: white; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    border: none; box-shadow: 0 10px 20px rgba(67, 97, 238, 0.4); 
+    z-index: 1000; transition: transform 0.2s;
+}
+
+.fab-btn:active { transform: scale(0.9); }
+
+/* ការកំណត់អក្សរខ្មែរលើ Element ផ្សេងៗ */
+.fw-bold, .form-select, .form-control, label, table, h1, h2, h3, h4, h5, h6, .btn { 
+    font-family: var(--font-khmer); 
+}
+
+/* --- ការកែលម្អសម្រាប់ Mobile Friendly --- */
+@media (max-width: 576px) {
+    .login-card { padding: 1.5rem; }
+    .stat-card { padding: 1rem; }
+    .stat-card .h4 { font-size: 1.1rem; }
+    
+    .table { 
+        font-size: 0.85rem; 
+        display: block; 
+        width: 100%; 
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch; 
     }
-    #studentTable tbody td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-align: right;
-        padding: 8px 5px;
-        border: none;
-        border-bottom: 1px solid #eee;
+    
+    .d-none-mobile { display: none !important; }
+}
+
+/* --- Action Buttons Styling --- */
+.btn-group .btn {
+    border-radius: 8px;
+    margin: 0 2px;
+    padding: 4px 8px;
+}
+
+/* --- ស្ទីលសម្រាប់បោះពុម្ព (Print View) កែលម្អថ្មី --- */
+@media print {
+    /* លាក់អ្វីដែលមិនចាំបាច់ */
+    .app-navbar, .fab-btn, .btn, .no-print, #loginSection { 
+        display: none !important; 
     }
-    #studentTable tbody td:last-child { border: none; }
-    #studentTable tbody td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        color: #666;
-        text-align: left;
+    
+    /* កែសម្រួល Layout សម្រាប់ក្រដាស */
+    body { 
+        background-color: white !important; 
+        color: black !important;
+        padding: 0;
+        margin: 0;
+    }
+
+    .container-fluid {
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .content-box { 
+        border: none !important; 
+        box-shadow: none !important; 
+        width: 100% !important;
+    }
+
+    /* រចនាតារាងពេល Print */
+    .table {
+        width: 100% !important;
+        border: 1px solid #000 !important;
+        font-size: 10pt !important;
+    }
+
+    .table th, .table td {
+        border: 1px solid #000 !important;
+        padding: 8px !important;
+        color: black !important;
+    }
+
+    /* បង្ហាញ Header សម្រាប់ Print (ដែលយើងដាក់ក្នុង HTML) */
+    .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    /* បង្ខំឱ្យ Browser បោះពុម្ពពណ៌ (Background Colors) */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 }
 
-.stat-card {
-    background: white;
-    padding: 15px;
-    border-radius: 16px;
-    border-left: 5px solid var(--primary);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
+
