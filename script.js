@@ -237,17 +237,22 @@ function printReport() {
     let totalFemale = allStudents.filter(s => s[1] === 'Female' || s[1] === 'ស្រី').length;
     let totalFee = 0;
     
-    // ២. បង្កើតជួរដេកតារាង និងគណនាលុយលម្អិតក្នុងជួរនីមួយៗ
+    // ២. បង្កើតជួរដេកតារាង
     let tableRows = allStudents.map(r => {
-        // ដកយកតែលេខពីតម្លៃសិក្សា (ឧទាហរណ៍៖ "60,000 KHR" -> 60000)
+        // ដកយកតែលេខពីតម្លៃសិក្សា
         let feeNum = parseInt(r[4].toString().replace(/[^0-9]/g, '')) || 0;
         totalFee += feeNum;
         
         let teacherPart = feeNum * 0.8;
         let schoolPart = feeNum * 0.2;
         
-        // ថ្ងៃបង់ប្រាក់ (សន្មតថាជាទិន្នន័យទី ៧ បើមានក្នុង Array ឬប្រើថ្ងៃបច្ចុប្បន្ន)
-        let payDate = r[7] ? r[7] : new Date().toLocaleDateString('km-KH');
+        // កែសម្រួល Index ថ្ងៃបង់ប្រាក់៖ ប្រសិនបើក្នុង Spreadsheet វាស្ថិតនៅជួរឈរទី ៨ ត្រូវប្រើ r[7]
+        // ប្រសិនបើបង្ហាញខុស ជួរឈរទី ៩ ត្រូវប្រើ r[8] ។ តាមរូបភាព r[7] ហាក់ដូចជាលទ្ធផលគណនាផ្សេង
+        // ដូច្នេះខ្ញុំបន្ថែម Logic ដើម្បីឆែកមើលកាលបរិច្ឆេទឱ្យបានត្រឹមត្រូវ
+        let payDate = r[7]; 
+        if (!payDate || payDate.toString().includes('KHR') || !isNaN(payDate)) {
+            payDate = new Date().toLocaleDateString('km-KH'); // ប្រើថ្ងៃបច្ចុប្បន្នបើរកមិនឃើញកាលបរិច្ឆេទ
+        }
 
         return `
             <tr>
@@ -258,7 +263,7 @@ function printReport() {
                 <td style="border: 1px solid black; padding: 6px; text-align: right; font-weight: bold;">${feeNum.toLocaleString()} ៛</td>
                 <td style="border: 1px solid black; padding: 6px; text-align: right; color: #0d6efd;">${teacherPart.toLocaleString()} ៛</td>
                 <td style="border: 1px solid black; padding: 6px; text-align: right; color: #dc3545;">${schoolPart.toLocaleString()} ៛</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: center; font-size: 11px;">${payDate}</td>
+                <td style="border: 1px solid black; padding: 6px; text-align: center;">${payDate}</td>
             </tr>
         `;
     }).join('');
@@ -274,21 +279,19 @@ function printReport() {
             <style>
                 body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 20px; color: black; background-color: white; }
                 
-                .top-header { display: flex; align-items: center; margin-bottom: 15px; }
-                .logo-box { width: 80px; margin-right: 15px; }
+                /* Header Layout */
+                .header-wrapper { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+                .left-header { text-align: center; }
+                .right-header { text-align: center; font-family: 'Khmer OS Muol Light'; font-size: 14px; }
+                .logo-box { width: 70px; margin: 0 auto 5px; }
                 .logo-box img { width: 100%; display: block; }
-                .school-kh { font-family: 'Khmer OS Muol Light'; font-size: 16px; }
+                .school-kh { font-family: 'Khmer OS Muol Light'; font-size: 14px; line-height: 1.8; }
 
                 .report-header { text-align: center; margin-bottom: 20px; }
-                .report-title { font-family: 'Khmer OS Muol Light'; font-size: 18px; margin-bottom: 5px; }
+                .report-title { font-family: 'Khmer OS Muol Light'; font-size: 18px; text-decoration: underline; }
 
                 /* Stats Cards */
-                .stats-container { 
-                    display: grid; 
-                    grid-template-columns: repeat(5, 1fr); 
-                    gap: 8px; 
-                    margin-bottom: 20px; 
-                }
+                .stats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
                 .stat-card { border: 1px solid black; padding: 6px; text-align: center; border-radius: 4px; }
                 .stat-label { font-size: 10px; font-weight: bold; margin-bottom: 2px; }
                 .stat-value { font-size: 12px; font-weight: bold; }
@@ -298,12 +301,12 @@ function printReport() {
                 th { border: 1px solid black; padding: 8px; background-color: #f2f2f2; font-family: 'Khmer OS Siemreap'; }
                 
                 .footer-container { width: 100%; margin-top: 20px; }
-                .date-section { text-align: right; font-size: 13px; margin-bottom: 15px; padding-right: 50px; line-height: 1.6; }
+                .date-section { text-align: right; font-size: 13px; margin-bottom: 10px; padding-right: 60px; }
                 
-                .signature-wrapper { display: flex; justify-content: space-between; padding: 0 60px; }
+                .signature-wrapper { display: flex; justify-content: space-between; padding: 0 80px; }
                 .sig-box { text-align: center; width: 220px; }
-                .sig-role { font-family: 'Khmer OS Muol Light'; font-size: 12px; margin-bottom: 60px; }
-                .sig-line { border-bottom: 1px dotted black; width: 100%; margin-bottom: 10px; }
+                .sig-role { font-family: 'Khmer OS Muol Light'; font-size: 13px; margin-bottom: 60px; }
+                .sig-line { border-bottom: 1px dotted black; width: 100%; margin: 10px 0; }
                 .sig-name { font-weight: bold; font-size: 13px; }
 
                 @media print {
@@ -313,13 +316,15 @@ function printReport() {
             </style>
         </head>
         <body>
-            <div class="top-header">
-                <div class="logo-box">
-                    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" alt="Logo">
+            <div class="header-wrapper">
+                <div class="left-header">
+                    <div class="logo-box">
+                        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" alt="Logo">
+                    </div>
+                    <div class="school-kh">សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី<br>នរោត្តមមុនីនាថសីហនុ</div>
                 </div>
-                <div class="school-info">
-                    <div class="school-kh">សាលាឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</div>
-                    <div style="font-weight: bold; font-size: 13px;">PREAH REACH AKK MOHESSEY</div>
+                <div class="right-header">
+                    ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ
                 </div>
             </div>
 
@@ -355,17 +360,17 @@ function printReport() {
 
             <div class="footer-container">
                 <div class="date-section">
-                    ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦ៃ
+                    ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦
                 </div>
                 
                 <div class="signature-wrapper">
                     <div class="sig-box">
                         <div class="sig-role">បានពិនិត្យ និងឯកភាព<br>នាយកសាលា</div>
-                        <div class="sig-line"></div>
+                        <div class="sig-line" style="margin-top: 40px;"></div>
                     </div>
                     <div class="sig-box">
                         <div class="sig-role">អ្នកចេញវិក្កយបត្រ</div>
-                        <div class="sig-line"></div>
+                        <div style="margin-top: 50px;"></div>
                         <div class="sig-name">ហម ម៉ាលីនដា</div>
                     </div>
                 </div>
@@ -384,7 +389,6 @@ function printReport() {
     printWindow.document.write(reportHTML);
     printWindow.document.close();
 }
-
 
 
 // មុខងារ Print វិក្កយបត្រ (Receipt) សម្រាប់សិស្សម្នាក់ៗ
@@ -429,6 +433,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
