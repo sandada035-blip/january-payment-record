@@ -7,41 +7,47 @@ let allStudents = [];
 let currentUserRole = "User"; // កំណត់ Role លំនាំដើម
 
 // --- 1. Authentication ---
-// --- 1. Authentication ---
 async function login() {
     const u = document.getElementById('username').value.trim();
     const p = document.getElementById('password').value.trim();
     
-    if(!u || !p) {
-        // បង្ហាញសារប្រសិនបើមិនបានបញ្ចូល Username ឬ Password
-        return Swal.fire('Warning', 'សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យសម្ងាត់', 'warning');
-    }
+    if(!u || !p) return Swal.fire('តម្រូវការ', 'សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យសម្ងាត់', 'warning');
     
-    Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading(), allowOutsideClick: false});
+    Swal.fire({
+        title: 'កំពុងផ្ទៀងផ្ទាត់...',
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false
+    });
     
-    const res = await callAPI('checkLogin', u, p);
+    const res = await callAPI('checkLogin', u, p); 
     
     if(res && res.success) {
-        currentUserRole = res.role; 
-        document.getElementById('loginSection').style.display = 'none';
+        currentUserRole = res.role;
+        
+        // --- ចំណុចសំខាន់៖ លាក់ Login និងបង្ហាញ App ---
+        document.getElementById('loginSection').classList.replace('d-flex', 'd-none');
         document.getElementById('mainApp').style.display = 'block';
         
         applyPermissions();
         showSection('dashboard');
-        Swal.close();
-        // បង្ហាញសារជោគជ័យ
+        
+        // បង្ហាញសារជោគជ័យតាមការចង់បាន
         Swal.fire({
+            icon: 'success',
             title: 'ជោគជ័យ!',
             text: 'អ្នកបានចូលប្រើប្រាស់ដោយជោគជ័យ!',
-            icon: 'success',
-            timer: 2000, // បិទដោយស្វ័យប្រវត្តិក្រោយ ២ វិនាទី
-            timerProgressBar: true,
+            timer: 2000,
             showConfirmButton: false
         });
     } else {
-        Swal.close(); // បិទ Loading Swal មុននឹងបង្ហាញ Error
-        // បង្ហាញសារបរាជ័យតាមការស្នើសុំ
-        Swal.fire('បរាជ័យ', 'សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ ឬពាក្យសម្ងាត់ម្ដងទៀត!', 'error');
+        // បង្ហាញសារបរាជ័យតាមការចង់បាន
+        Swal.fire({
+            icon: 'error',
+            title: 'បរាជ័យ',
+            text: 'សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ឬពាក្យម្តងទៀត!',
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#4361ee'
+        });
     }
 }
 
@@ -448,6 +454,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
