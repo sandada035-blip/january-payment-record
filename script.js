@@ -2,58 +2,104 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzIjImp2Ds_T96-bnLw
 let allStudents = [];
 let currentUserRole = "User";
 
-// ១. មុខងារ LOGIN
+// ១. LOGIN & PERMISSIONS
 async function login() {
     const u = document.getElementById('username').value.trim();
     const p = document.getElementById('password').value.trim();
-    
-    if(!u || !p) return Swal.fire('តម្រូវការ', 'សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យសម្ងាត់', 'warning');
-    
+    if(!u || !p) return Swal.fire('តម្រូវការ', 'សូមបញ្ចូល Username និង Password', 'warning');
+
     Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading(), allowOutsideClick: false});
-    
     const res = await callAPI('checkLogin', u, p); 
-    
+
     if(res && res.success) {
-        currentUserRole = res.role;
-        // លាក់ Login និងបង្ហាញ Main App
-        const loginSec = document.getElementById('loginSection');
-        loginSec.classList.remove('d-flex');
-        loginSec.classList.add('d-none');
+        currentUserRole = res.role; // Admin ឬ User
+        document.getElementById('loginSection').classList.replace('d-flex', 'd-none');
         document.getElementById('mainApp').style.display = 'block';
         
-        showSection('dashboard');
-        Swal.fire({
-            icon: 'success',
-            title: 'ជោគជ័យ!',
-            text: 'អ្នកបានចូលប្រើប្រាស់ដោយជោគជ័យ!',
-            timer: 2000,
-            showConfirmButton: false
+        // កំណត់សិទ្ធិមើលឃើញ (Admin Show, User Hide)
+        const adminElements = document.querySelectorAll('.admin-only');
+        adminElements.forEach(el => {
+            el.style.setProperty('display', currentUserRole === 'Admin' ? 'block' : 'none', 'important');
         });
+
+        showSection('dashboard');
+        Swal.fire({icon: 'success', title: 'ជោគជ័យ!', text: 'អ្នកបានចូលប្រើប្រាស់ដោយជោគជ័យ!', timer: 2000, showConfirmButton: false});
     } else {
         Swal.fire('បរាជ័យ', 'សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ឬពាក្យម្តងទៀត!', 'error');
     }
 }
 
-// ២. មុខងារ LOGOUT
-function logout() {
-    Swal.fire({
-        title: 'តើអ្នកចង់ចាកចេញមែនទេ?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'បាទ ចាកចេញ',
-        cancelButtonText: 'បោះបង់'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const loginSec = document.getElementById('loginSection');
-            loginSec.classList.remove('d-none');
-            loginSec.classList.add('d-flex');
-            document.getElementById('mainApp').style.display = 'none';
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        }
-    });
+function logout() { location.reload(); }
+
+// ២. RENDER STUDENT TABLE (Mobile Friendly)
+function renderStudentTable(rows) {
+    document.getElementById('studentBody').innerHTML = rows.map((r, i) => `
+        <tr>
+            <td data-label="ឈ្មោះ" class="fw-bold text-primary">${r[0]}</td>
+            <td data-label="ភេទ">${r[1]}</td>
+            <td data-label="គ្រូ">${r[3]}</td>
+            <td data-label="តម្លៃ" class="text-success fw-bold">${r[4]}</td>
+            <td data-label="សកម្មភាព" class="admin-only" style="display: ${currentUserRole === 'Admin' ? 'flex' : 'none'}">
+                <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(${i})"><i class="bi bi-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
 }
 
+// ៣. PRINT REPORT (ក្បាលទំព័រតាមរូបភាព)
+function printReport() {
+    const printWindow = window.open('', '', 'height=900,width=1100');
+    let totalFee = 0;
+    let tableRows = allStudents.map(r => {
+        let feeNum = parseInt(r[4].replace(/[^0-9]/g, '')) || 0;
+        totalFee += feeNum;
+        return `<tr>
+            <td style="border:1px solid black; padding:8px;">${r[0]}</td>
+            <td style="border:1px solid black; padding:8px; text-align:center;">${r[1]}</td>
+            <td style="border:1px solid black; padding:8px; text-align:center;">${r[2]}</td>
+            <td style="border:1px solid black; padding:8px;">${r[3]}</td>
+            <td style="border:1px solid black; padding:8px; text-align:right;">${feeNum.toLocaleString()} ៛</td>
+            <td style="border:1px solid black; padding:8px; text-align:right; color:blue;">${(feeNum*0.8).toLocaleString()} ៛</td>
+            <td style="border:1px solid black; padding:8px; text-align:right; color:red;">${(feeNum*0.2).toLocaleString()} ៛</td>
+        </tr>`;
+    }).join('');
+
+    const reportHTML = `
+        <html><head><title>Print</title><style>body{font-family:'Khmer OS Siemreap';padding:30px;} table{width:100%; border-collapse:collapse;}</style></head>
+        <body>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <div style="text-align:center"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" width="60"><br>សាលារៀន ព្រះរាជអគ្គមហេសី</div>
+                <div style="text-align:center; font-family:'Khmer OS Muol Light'">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+            </div>
+            <h3 style="text-align:center; font-family:'Khmer OS Muol Light'">របាយការណ៍សិស្ស</h3>
+            <table>
+                <thead><tr><th style="border:1px solid black;">ឈ្មោះ</th><th style="border:1px solid black;">ភេទ</th><th style="border:1px solid black;">ថ្នាក់</th><th style="border:1px solid black;">គ្រូ</th><th style="border:1px solid black;">សរុប</th><th style="border:1px solid black;">គ្រូ(80%)</th><th style="border:1px solid black;">សាលា(20%)</th></tr></thead>
+                <tbody>${tableRows}</tbody>
+            </table>
+            <div style="margin-top:40px; display:flex; justify-content:space-between; padding:0 50px;">
+                <div style="text-align:center">បានឃើញ និងឯកភាព<br><b>នាយកសាលា</b></div>
+                <div style="text-align:center">ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦<br><b>អ្នកចេញវិក្កយបត្រ</b><br><br><b>ហម ម៉ាលីនដា</b></div>
+            </div>
+            <script>window.onload=function(){window.print();window.close();}</script>
+        </body></html>`;
+    printWindow.document.write(reportHTML);
+    printWindow.document.close();
+}
+
+// API CORE
+async function callAPI(funcName, ...args) {
+    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
+    try { const response = await fetch(url); return await response.json(); } catch(e) { return null; }
+}
+
+function showSection(id) {
+    document.getElementById('dashboardSection').style.display = id === 'dashboard' ? 'block' : 'none';
+    document.getElementById('studentSection').style.display = id === 'students' ? 'block' : 'none';
+    if(id === 'dashboard') loadDashboard();
+    if(id === 'students') loadStudents();
+}
+// (Load data functions follow the previous logic...)
 // ៣. មុខងារ PRINT (តាមរូបភាពដែលបានកែសម្រួលចុងក្រោយ)
 function printReport() {
     const printWindow = window.open('', '', 'height=900,width=1100');
@@ -532,6 +578,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
