@@ -3,138 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>School Admin Pro - Preah Reach Akk Mohessey</title>
+  <title>School Admin Pro - Final Version</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+Khmer:wght@400;700&family=Khmer+OS+Siemreap&family=Khmer+OS+Muol+Light&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Khmer+OS+Siemreap&family=Khmer+OS+Muol+Light&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
-  <style>
-    /* បន្ថែមការរចនាសម្រាប់ Login Section */
-    #loginSection {
-        transition: all 0.5s ease;
-    }
-    
-    /* កែលម្អការបោះពុម្ព (Print Logic) */
-    @media print {
-      body * { visibility: hidden; }
-      #printArea, #printArea * { visibility: visible; }
-      #printArea { position: absolute; left: 0; top: 0; width: 100%; }
-      .no-print { display: none !important; }
-    }
-  </style>
 </head>
 <body>
 
-<section id="loginSection" class="d-flex align-items-center justify-content-center min-vh-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="card shadow-lg p-4 rounded-4" style="width: 100%; max-width: 400px; border: none;">
+<section id="loginSection" class="d-flex align-items-center justify-content-center min-vh-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+    <div class="card shadow-lg p-4 rounded-4" style="width: 92%; max-width: 400px; border: none;">
         <div class="card-body text-center">
             <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" 
-                 alt="Logo" class="mb-3" style="width: 80px; height: 80px; object-fit: contain;">
-            <h4 class="fw-bold text-primary mb-1">ប្រព័ន្ធគ្រប់គ្រងសិស្ស</h4>
-            <p class="text-muted small mb-4">សូមបញ្ចូលព័ត៌មានដើម្បីចូលប្រើប្រាស់</p>
+                 alt="Logo" class="mb-3" style="width: 70px;">
+            <h4 class="fw-bold text-primary mb-1" style="font-family: 'Khmer OS Muol Light';">ប្រព័ន្ធគ្រប់គ្រងសិស្ស</h4>
+            <p class="text-muted small mb-4">សាលារៀន ព្រះរាជអគ្គមហេសី</p>
             
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="username" placeholder="Username">
-                <label><i class="bi bi-person"></i> ឈ្មោះអ្នកប្រើប្រាស់</label>
+                <input type="text" class="form-control" id="username" placeholder="User">
+                <label>ឈ្មោះអ្នកប្រើប្រាស់</label>
             </div>
             <div class="form-floating mb-4">
-                <input type="password" class="form-control" id="password" placeholder="Password">
-                <label><i class="bi bi-lock"></i> ពាក្យសម្ងាត់</label>
+                <input type="password" class="form-control" id="password" placeholder="Pass">
+                <label>ពាក្យសម្ងាត់</label>
             </div>
-            <button class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm" onclick="login()">
-                <i class="bi bi-box-arrow-in-right"></i> ចូលប្រព័ន្ធ
-            </button>
+            <button class="btn btn-primary w-100 py-3 fw-bold rounded-3" onclick="login()">ចូលប្រព័ន្ធ</button>
         </div>
     </div>
 </section>
 
 <div id="mainApp" style="display:none;">
-  <nav class="app-navbar bg-white p-3 shadow-sm d-flex justify-content-between sticky-top no-print">
-    <h5 class="m-0 fw-bold text-primary"><i class="bi bi-grid-fill"></i> Dashboard</h5>
-    <div class="d-flex gap-2">
-      <button class="btn btn-sm btn-light" onclick="showSection('dashboard')">Home</button>
-      <button class="btn btn-sm btn-light" onclick="showSection('students')">Students</button>
-      <button class="btn btn-sm btn-outline-danger" onclick="logout()">
-          <i class="bi bi-box-arrow-left"></i> Logout
-      </button>
+  <nav class="navbar navbar-dark bg-primary sticky-top no-print px-2">
+    <div class="container-fluid">
+      <span class="navbar-brand fw-bold small"><i class="bi bi-mortarboard-fill"></i> SCHOOL ADMIN</span>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-light" onclick="showSection('dashboard')"><i class="bi bi-house"></i></button>
+        <button class="btn btn-sm btn-light" onclick="showSection('students')"><i class="bi bi-people"></i></button>
+        <button class="btn btn-sm btn-danger" onclick="logout()"><i class="bi bi-power"></i></button>
+      </div>
     </div>
   </nav>
 
-  <div id="dashboardSection" class="container-fluid p-3">
-    <div class="row g-3" id="statsRow"></div>
-    
-    <div class="content-box mt-4">
-      <div class="p-3 border-bottom d-flex justify-content-between align-items-center no-print">
-        <h6 class="fw-bold m-0">Teacher Summary</h6>
-        <button class="btn btn-sm btn-dark" onclick="printReport()">
-            <i class="bi bi-printer"></i> Print Report
-        </button>
-      </div>
-      <div class="table-responsive">
-          <table class="table table-hover mb-0" id="teacherTable">
-              <thead class="table-light">
-                  <tr><th>គ្រូ</th><th>ភេទ</th><th>សិស្ស</th><th>តម្លៃសរុប</th><th>៨០%</th><th>២០%</th></tr>
-              </thead>
-              <tbody id="teacherBody"></tbody>
-          </table>
-      </div>
-    </div>
-  </div>
-
-  <div id="studentSection" class="container-fluid p-3" style="display:none;">
-    <div class="content-box">
-      <div class="p-3 border-bottom d-flex justify-content-between align-items-center no-print">
-        <h5 class="fw-bold m-0">Student Records</h5>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-dark btn-sm" onclick="printReport()">
-                <i class="bi bi-printer"></i> Print
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="openStudentModal()">+ Add New</button>
+  <div id="dashboardSection" class="container p-3">
+    <div class="row g-2 mb-3" id="statsRow"></div>
+    <div class="bg-white p-3 rounded-4 shadow-sm border-0">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold m-0 text-primary">សង្ខេបទិន្នន័យគ្រូ</h6>
+            <button class="btn btn-sm btn-outline-dark" onclick="printReport()"><i class="bi bi-printer"></i> បោះពុម្ព</button>
         </div>
-      </div>
-      <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead><tr><th>ឈ្មោះ</th><th>ភេទ</th><th>ថ្នាក់</th><th>គ្រូ</th><th>តម្លៃ</th><th>សកម្មភាព</th></tr></thead>
-            <tbody id="studentBody"></tbody>
-          </table>
-      </div>
-      <div id="studentLoading" class="text-center p-5 d-none"><div class="spinner-border text-primary"></div></div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead class="table-light"><tr><th>គ្រូ</th><th>សិស្ស</th><th>សរុប</th><th>២០%</th></tr></thead>
+                <tbody id="teacherBody"></tbody>
+            </table>
+        </div>
     </div>
   </div>
 
-  <button id="fabBtn" class="fab-btn no-print" onclick="openStudentModal()"><i class="bi bi-plus-lg"></i></button>
+  <div id="studentSection" class="container p-3" style="display:none;">
+    <div class="bg-white p-3 rounded-4 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold m-0 text-primary">បញ្ជីឈ្មោះសិស្ស</h5>
+            <button class="btn btn-primary btn-sm admin-only" onclick="openStudentModal()" style="display:none;">+ បន្ថែមសិស្ស</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="studentTable">
+                <thead class="table-light"><tr><th>ឈ្មោះ</th><th>ភេទ</th><th>គ្រូ</th><th>តម្លៃ</th><th class="admin-only" style="display:none;">សកម្មភាព</th></tr></thead>
+                <tbody id="studentBody"></tbody>
+            </table>
+        </div>
+    </div>
+  </div>
+
+  <button id="fabBtn" class="btn btn-primary admin-only shadow-lg fab-btn" onclick="openStudentModal()" style="display:none; position: fixed; bottom: 25px; right: 25px; border-radius: 50%; width: 60px; height: 60px;">
+    <i class="bi bi-plus-lg fs-4"></i>
+  </button>
 </div>
 
 <div class="modal fade" id="studentModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-4">
-      <div class="modal-header border-0"><h5 class="fw-bold" id="modalTitle">បញ្ចូលសិស្សថ្មី</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body p-4">
-        <input type="hidden" id="editOriginalName">
-        <div class="form-floating mb-3"><input type="text" id="addStudentName" class="form-control"><label>ឈ្មោះសិស្ស</label></div>
-        <div class="row g-2 mb-3">
-          <div class="col-6"><div class="form-floating"><select id="addGender" class="form-select"><option value="Male">ប្រុស</option><option value="Female">ស្រី</option></select><label>ភេទ</label></div></div>
-          <div class="col-6"><div class="form-floating"><input type="text" id="addGrade" class="form-control" placeholder="ថ្នាក់"><label>ថ្នាក់</label></div></div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4">
+            <div class="modal-header"><h5 class="fw-bold m-0" id="modalTitle">បញ្ចូលសិស្សថ្មី</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="editOriginalName">
+                <div class="form-floating mb-3"><input type="text" id="addStudentName" class="form-control rounded-3"><label>ឈ្មោះសិស្ស</label></div>
+                <div class="row g-2 mb-3">
+                    <div class="col-6"><div class="form-floating"><select id="addGender" class="form-select"><option value="Male">ប្រុស</option><option value="Female">ស្រី</option></select><label>ភេទ</label></div></div>
+                    <div class="col-6"><div class="form-floating"><input type="text" id="addGrade" class="form-control"><label>ថ្នាក់</label></div></div>
+                </div>
+                <div class="form-floating mb-3"><select id="addTeacherSelect" class="form-select">
+                    <option value="កែមលៀងគា">កែមលៀងគា</option><option value="ប្រាក់ប្រសើ">ប្រាក់ប្រសើ</option>
+                    <option value="ស្រេងស្រីម៉ី">ស្រេងស្រីម៉ី</option><option value="ថាស្បៃរឿង">ថាស្បៃរឿង</option>
+                    <option value="ស្រីសុផានី">ស្រីសុផានី</option><option value="ណុនផាន់ណី">ណុនផាន់ណី</option>
+                </select><label>គ្រូបង្រៀន</label></div>
+                <div class="form-floating mb-3"><input type="number" id="addFee" class="form-control"><label>តម្លៃសិក្សា</label></div>
+                <button class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow" onclick="submitStudent()">រក្សាទុក</button>
+            </div>
         </div>
-        <div class="form-floating mb-3">
-          <select id="addTeacherSelect" class="form-select">
-            <option value="កែមលៀងគា">កែមលៀងគា</option><option value="ប្រាក់ប្រសើ">ប្រាក់ប្រសើ</option>
-            <option value="ស្រេងស្រីម៉ី">ស្រេងស្រីម៉ី</option><option value="ថាស្បៃរឿង">ថាស្បៃរឿង</option>
-            <option value="ស្រីសុផានី">ស្រីសុផានី</option><option value="ណុនផាន់ណី">ណុនផាន់ណី</option>
-          </select>
-          <label>ជ្រើសរើសគ្រូ</label>
-        </div>
-        <div class="form-floating mb-3"><input type="number" id="addFee" class="form-control"><label>តម្លៃសិក្សា</label></div>
-        <div class="p-3 bg-light rounded mb-3 d-flex justify-content-between">
-            <div><small class="text-muted d-block">គ្រូ ៨០%</small><strong id="disp80" class="text-primary">0 ៛</strong></div>
-            <div><small class="text-muted d-block">សាលា ២០%</small><strong id="disp20" class="text-danger">0 ៛</strong></div>
-        </div>
-        <button id="submitBtn" class="btn btn-primary w-100 py-3 fw-bold" onclick="submitStudent()">រក្សាទុក</button>
-      </div>
     </div>
-  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
