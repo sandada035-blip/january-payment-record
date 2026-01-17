@@ -43,16 +43,30 @@
 </head>
 <body>
 
-<div id="loginSection" class="login-wrapper">
-  <div class="login-card">
-    <div class="login-icon-box"><i class="bi bi-mortarboard-fill"></i></div>
-    <h3 class="fw-bold mb-1">PREAH REACH AKK MOHESSEY</h3>
-    <p class="text-muted mb-4 small">Dashboard Access</p>
-    <div class="form-floating mb-3"><input type="text" id="username" class="form-control" placeholder="User"><label>Username</label></div>
-    <div class="form-floating mb-4"><input type="password" id="password" class="form-control" placeholder="Pass"><label>Password</label></div>
-    <button class="btn btn-primary w-100 btn-login" onclick="login()">LOGIN</button>
-  </div>
-</div>
+<section id="loginSection" class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+    <div class="login-container card shadow-lg p-4 p-md-5 rounded-3">
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" alt="Logo" class="login-logo mb-3">
+                <h4 class="card-title text-primary fw-bold mb-1">ប្រព័ន្ធគ្រប់គ្រងសិស្ស</h4>
+                <p class="text-muted small">សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យសម្ងាត់</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label small fw-bold">ឈ្មោះអ្នកប្រើប្រាស់</label>
+                    <input type="text" class="form-control" id="username" placeholder="Username" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label small fw-bold">ពាក្យសម្ងាត់</label>
+                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                </div>
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary btn-lg fw-bold" onclick="login()">ចូលប្រព័ន្ធ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
 
 <div id="mainApp" style="display:none;">
   <nav class="app-navbar bg-white p-3 shadow-sm d-flex justify-content-between sticky-top">
@@ -164,3 +178,4 @@
 <script src="script.js"></script>
 </body>
 </html>
+
