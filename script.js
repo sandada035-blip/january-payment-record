@@ -1,27 +1,28 @@
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzIjImp2Ds_T96-bnLwhoH9Zm4asoJxOaOeqr1EOk9zq-Pqv6NwwcS3miCHc60xUgJo/exec";
 let allStudents = [];
-let currentUserRole = "User";
+let currentUserRole = "User"; // លំនាំដើម
 
-// ១. LOGIN & PERMISSIONS
+// ១. មុខងារ LOGIN
 async function login() {
     const u = document.getElementById('username').value.trim();
     const p = document.getElementById('password').value.trim();
+    
     if(!u || !p) return Swal.fire('តម្រូវការ', 'សូមបញ្ចូល Username និង Password', 'warning');
-
+    
     Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading(), allowOutsideClick: false});
+    
     const res = await callAPI('checkLogin', u, p); 
-
+    
     if(res && res.success) {
-        currentUserRole = res.role; // Admin ឬ User
+        currentUserRole = res.role; // ទទួលបាន "Admin" ឬ "User" ពី Server
+        
+        // លាក់ Login និងបង្ហាញ App
         document.getElementById('loginSection').classList.replace('d-flex', 'd-none');
         document.getElementById('mainApp').style.display = 'block';
         
-        // កំណត់សិទ្ធិមើលឃើញ (Admin Show, User Hide)
-        const adminElements = document.querySelectorAll('.admin-only');
-        adminElements.forEach(el => {
-            el.style.setProperty('display', currentUserRole === 'Admin' ? 'block' : 'none', 'important');
-        });
-
+        // បញ្ជាឱ្យរៀបចំសិទ្ធិមើលឃើញ
+        updateUIPermissions();
+        
         showSection('dashboard');
         Swal.fire({icon: 'success', title: 'ជោគជ័យ!', text: 'អ្នកបានចូលប្រើប្រាស់ដោយជោគជ័យ!', timer: 2000, showConfirmButton: false});
     } else {
@@ -29,24 +30,55 @@ async function login() {
     }
 }
 
-function logout() { location.reload(); }
+// មុខងារសម្រាប់កំណត់ការបង្ហាញប៊ូតុងតាម Role
+function updateUIPermissions() {
+    const adminElements = document.querySelectorAll('.admin-only');
+    adminElements.forEach(el => {
+        if (currentUserRole === 'Admin') {
+            el.classList.remove('admin-hidden');
+            el.classList.add('admin-visible');
+        } else {
+            el.classList.remove('admin-visible');
+            el.classList.add('admin-hidden');
+        }
+    });
+}
 
-// ២. RENDER STUDENT TABLE (Mobile Friendly)
+// ២. មុខងារបង្ហាញតារាងសិស្ស (Mobile Friendly)
 function renderStudentTable(rows) {
     document.getElementById('studentBody').innerHTML = rows.map((r, i) => `
         <tr>
-            <td data-label="ឈ្មោះ" class="fw-bold text-primary">${r[0]}</td>
-            <td data-label="ភេទ">${r[1]}</td>
-            <td data-label="គ្រូ">${r[3]}</td>
-            <td data-label="តម្លៃ" class="text-success fw-bold">${r[4]}</td>
-            <td data-label="សកម្មភាព" class="admin-only" style="display: ${currentUserRole === 'Admin' ? 'flex' : 'none'}">
-                <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>
+            <td class="fw-bold">${r[0]}</td>
+            <td>${r[1]}</td>
+            <td>${r[3]}</td>
+            <td class="text-success">${r[4]}</td>
+            <td class="admin-only ${currentUserRole === 'Admin' ? 'admin-visible' : 'admin-hidden'}">
+                <button class="btn btn-sm btn-outline-warning" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(${i})"><i class="bi bi-trash"></i></button>
             </td>
         </tr>
     `).join('');
 }
 
+// មុខងារចាកចេញ
+function logout() { location.reload(); }
+
+// មុខងារហៅ API
+async function callAPI(funcName, ...args) {
+    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
+    try {
+        const response = await fetch(url);
+        return await response.json();
+    } catch (e) { return null; }
+}
+
+function showSection(id) {
+    document.getElementById('dashboardSection').style.display = id === 'dashboard' ? 'block' : 'none';
+    document.getElementById('studentSection').style.display = id === 'students' ? 'block' : 'none';
+    if(id === 'dashboard') loadDashboard();
+    if(id === 'students') loadStudents();
+}
+// ( loadDashboard, loadStudents, printReport... រក្សាទុកតាមកូដមុនដែលអ្នកពេញចិត្ត)
 // ៣. PRINT REPORT (ក្បាលទំព័រតាមរូបភាព)
 function printReport() {
     const printWindow = window.open('', '', 'height=900,width=1100');
@@ -560,6 +592,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
