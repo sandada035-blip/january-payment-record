@@ -2,123 +2,128 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzIjImp2Ds_T96-bnLw
 let allStudents = [];
 let currentUserRole = "User";
 
-// ១. មុខងារ LOGIN
+// ១. LOGIN & LOGOUT
 async function login() {
     const u = document.getElementById('username').value.trim();
     const p = document.getElementById('password').value.trim();
-    
-    if(!u || !p) return Swal.fire('តម្រូវការ', 'សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យសម្ងាត់', 'warning');
-    
+    if(!u || !p) return Swal.fire('តម្រូវការ', 'សូមបញ្ចូល Username និង Password', 'warning');
+
     Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading(), allowOutsideClick: false});
-    
     const res = await callAPI('checkLogin', u, p); 
-    
+
     if(res && res.success) {
-        currentUserRole = res.role;
-        // លាក់ Login និងបង្ហាញ Main App
-        const loginSec = document.getElementById('loginSection');
-        loginSec.classList.remove('d-flex');
-        loginSec.classList.add('d-none');
+        currentUserRole = res.role; // "Admin" ឬ "User"
+        document.getElementById('loginSection').classList.replace('d-flex', 'd-none');
         document.getElementById('mainApp').style.display = 'block';
         
+        // បែងចែកសិទ្ធិ
+        const adminEls = document.querySelectorAll('.admin-only');
+        adminEls.forEach(el => el.style.setProperty('display', currentUserRole === 'Admin' ? 'inline-block' : 'none', 'important'));
+
         showSection('dashboard');
-        Swal.fire({
-            icon: 'success',
-            title: 'ជោគជ័យ!',
-            text: 'អ្នកបានចូលប្រើប្រាស់ដោយជោគជ័យ!',
-            timer: 2000,
-            showConfirmButton: false
-        });
+        Swal.fire({icon: 'success', title: 'ជោគជ័យ!', text: 'អ្នកបានចូលប្រើប្រាស់ដោយជោគជ័យ!', timer: 2000, showConfirmButton: false});
     } else {
         Swal.fire('បរាជ័យ', 'សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ឬពាក្យម្តងទៀត!', 'error');
     }
 }
 
-// ២. មុខងារ LOGOUT
-function logout() {
-    Swal.fire({
-        title: 'តើអ្នកចង់ចាកចេញមែនទេ?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'បាទ ចាកចេញ',
-        cancelButtonText: 'បោះបង់'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const loginSec = document.getElementById('loginSection');
-            loginSec.classList.remove('d-none');
-            loginSec.classList.add('d-flex');
-            document.getElementById('mainApp').style.display = 'none';
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        }
-    });
+function logout() { location.reload(); }
+
+// ២. RENDER TABLE
+function renderStudentTable(rows) {
+    document.getElementById('studentBody').innerHTML = rows.map((r, i) => `
+        <tr>
+            <td data-label="ឈ្មោះ" class="fw-bold text-primary">${r[0]}</td>
+            <td data-label="ភេទ">${r[1]}</td>
+            <td data-label="គ្រូ">${r[3]}</td>
+            <td data-label="តម្លៃ" class="text-success fw-bold">${r[4]}</td>
+            <td data-label="សកម្មភាព" class="admin-only" style="display: ${currentUserRole === 'Admin' ? 'table-cell' : 'none'}">
+                <button class="btn btn-sm btn-outline-warning" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(${i})"><i class="bi bi-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
 }
 
-// ៣. មុខងារ PRINT (តាមរូបភាពដែលបានកែសម្រួលចុងក្រោយ)
+// ៣. PRINT REPORT
 function printReport() {
     const printWindow = window.open('', '', 'height=900,width=1100');
-    let totalStudents = allStudents.length;
-    let totalFemale = allStudents.filter(s => s[1] === 'Female' || s[1] === 'ស្រី').length;
     let totalFee = 0;
-    
     let tableRows = allStudents.map(r => {
-        let feeNum = parseInt(r[4].toString().replace(/[^0-9]/g, '')) || 0;
+        let feeNum = parseInt(r[4].replace(/[^0-9]/g, '')) || 0;
         totalFee += feeNum;
         let payDate = r[7] && !r[7].toString().includes('KHR') ? r[7] : new Date().toLocaleDateString('km-KH');
-        return `
-            <tr>
-                <td style="border: 1px solid black; padding: 6px;">${r[0]}</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: center;">${r[1]}</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: center;">${r[2]}</td>
-                <td style="border: 1px solid black; padding: 6px;">${r[3]}</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: right;">${feeNum.toLocaleString()} ៛</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: right; color: blue;">${(feeNum * 0.8).toLocaleString()} ៛</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: right; color: red;">${(feeNum * 0.2).toLocaleString()} ៛</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: center;">${payDate}</td>
-            </tr>`;
+        return `<tr>
+            <td style="border:1px solid black; padding:8px;">${r[0]}</td>
+            <td style="border:1px solid black; padding:8px; text-align:center;">${r[1]}</td>
+            <td style="border:1px solid black; padding:8px; text-align:center;">${r[2]}</td>
+            <td style="border:1px solid black; padding:8px;">${r[3]}</td>
+            <td style="border:1px solid black; padding:8px; text-align:right;">${feeNum.toLocaleString()} ៛</td>
+            <td style="border:1px solid black; padding:8px; text-align:right; color:blue;">${(feeNum*0.8).toLocaleString()} ៛</td>
+            <td style="border:1px solid black; padding:8px; text-align:right; color:red;">${(feeNum*0.2).toLocaleString()} ៛</td>
+            <td style="border:1px solid black; padding:8px; text-align:center;">${payDate}</td>
+        </tr>`;
     }).join('');
 
     const reportHTML = `
-        <html>
-        <head>
-            <title>Report</title>
-            <style>
-                body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 20px; }
-                .header-table { width: 100%; display: flex; justify-content: space-between; margin-bottom: 20px; }
-                .report-title { font-family: 'Khmer OS Muol Light'; text-align: center; font-size: 18px; margin-bottom: 20px; text-decoration: underline; }
-                .stats { display: flex; gap: 10px; margin-bottom: 20px; }
-                .stat-box { border: 1px solid black; padding: 5px 15px; text-align: center; flex: 1; border-radius: 4px; }
-                table { width: 100%; border-collapse: collapse; font-size: 12px; }
-                th { border: 1px solid black; background: #eee; padding: 8px; }
-                .footer { margin-top: 30px; display: flex; justify-content: space-between; padding: 0 50px; }
-            </style>
-        </head>
+        <html><head><style>body{font-family:'Khmer OS Siemreap';padding:20px;} table{width:100%; border-collapse:collapse; table-layout:fixed;}</style></head>
         <body>
-            <div class="header-table">
-                <div style="text-align:center"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" width="70"><br><small>សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</small></div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="text-align:center"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" width="70"><br><small>សាលារៀន ព្រះរាជអគ្គមហេសី</small></div>
                 <div style="text-align:center; font-family:'Khmer OS Muol Light'">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
             </div>
-            <div class="report-title">របាយការណ៍លម្អិតសិស្សរៀនបំប៉នបន្ថែម</div>
-            <div class="stats">
-                <div class="stat-box">សិស្សសរុប: <b>${totalStudents}</b></div>
-                <div class="stat-box">សរុបស្រី: <b>${totalFemale}</b></div>
-                <div class="stat-box">សរុប: <b>${totalFee.toLocaleString()} ៛</b></div>
-            </div>
-            <table>
-                <thead><tr><th>ឈ្មោះសិស្ស</th><th>ភេទ</th><th>ថ្នាក់</th><th>គ្រូ</th><th>តម្លៃសិក្សា</th><th>គ្រូ(80%)</th><th>សាលា(20%)</th><th>ថ្ងៃបង់ប្រាក់</th></tr></thead>
+            <h3 style="text-align:center; font-family:'Khmer OS Muol Light'; margin-top:30px; text-decoration:underline;">របាយការណ៍សិស្សរៀនបំប៉នបន្ថែម</h3>
+            <table style="margin-top:20px;">
+                <thead><tr><th style="border:1px solid black; width:20%;">ឈ្មោះ</th><th style="border:1px solid black;">ភេទ</th><th style="border:1px solid black;">ថ្នាក់</th><th style="border:1px solid black;">គ្រូ</th><th style="border:1px solid black;">សរុប</th><th style="border:1px solid black;">គ្រូ(80%)</th><th style="border:1px solid black;">សាលា(20%)</th><th style="border:1px solid black;">ថ្ងៃបង់</th></tr></thead>
                 <tbody>${tableRows}</tbody>
             </table>
-            <div style="text-align:right; margin-top:20px;">ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦</div>
-            <div class="footer">
-                <div><b>នាយកសាលា</b><br><br><br>..........................</div>
-                <div><b>អ្នកចេញវិក្កយបត្រ</b><br><br><br><b>ហម ម៉ាលីនដា</b></div>
+            <div style="text-align:right; margin-top:30px;">ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦</div>
+            <div style="display:flex; justify-content:space-between; padding:0 50px; margin-top:20px;">
+                <div style="text-align:center">បានឃើញ និងឯកភាព<br><b>នាយកសាលា</b></div>
+                <div style="text-align:center"><b>អ្នកចេញវិក្កយបត្រ</b><br><br><br><b>ហម ម៉ាលីនដា</b></div>
             </div>
-            <script>window.onload = function(){ window.print(); window.close(); }</script>
+            <script>window.onload=function(){window.print();window.close();}</script>
         </body></html>`;
     printWindow.document.write(reportHTML);
     printWindow.document.close();
 }
 
+// API CORE
+async function callAPI(funcName, ...args) {
+    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
+    try { const response = await fetch(url); return await response.json(); } catch(e) { return null; }
+}
+
+function showSection(id) {
+    document.getElementById('dashboardSection').style.display = id === 'dashboard' ? 'block' : 'none';
+    document.getElementById('studentSection').style.display = id === 'students' ? 'block' : 'none';
+    if(id === 'dashboard') loadDashboard();
+    if(id === 'students') loadStudents();
+}
+
+async function loadDashboard() {
+    const res = await callAPI('getTeacherData');
+    if(!res) return;
+    let studentCount = 0; let totalFee = 0;
+    res.rows.forEach(r => {
+        studentCount += parseInt(r[2]) || 0;
+        totalFee += parseInt(r[3].replace(/[^0-9]/g, '')) || 0;
+    });
+    document.getElementById('statsRow').innerHTML = `
+        <div class="col-6 col-md-4"><div class="stat-card"><small class="text-muted">សិស្សសរុប</small><div class="h5 mb-0">${studentCount}</div></div></div>
+        <div class="col-6 col-md-4"><div class="stat-card"><small class="text-muted">គ្រូសរុប</small><div class="h5 mb-0">${res.rows.length}</div></div></div>
+        <div class="col-12 col-md-4"><div class="stat-card"><small class="text-muted">ចំណូលសរុប</small><div class="h5 mb-0 text-success">${totalFee.toLocaleString()} ៛</div></div></div>`;
+    document.getElementById('teacherBody').innerHTML = res.rows.map(r => `<tr><td>${r[0]}</td><td>${r[2]}</td><td>${r[3]}</td><td class="text-danger">${r[5]}</td></tr>`).join('');
+}
+
+async function loadStudents() {
+    document.getElementById('studentLoading')?.classList.remove('d-none');
+    const res = await callAPI('getStudentData');
+    document.getElementById('studentLoading')?.classList.add('d-none');
+    if(!res) return;
+    allStudents = res.rows;
+    renderStudentTable(res.rows);
+}
 // មុខងារហៅ API (Core)
 async function callAPI(funcName, ...args) {
     const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
@@ -607,6 +612,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
