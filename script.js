@@ -353,7 +353,10 @@ function printReport() {
                         <th style="width: 80px;">ភេទ</th>
                         <th style="width: 100px;">ថ្នាក់</th>
                         <th>គ្រូ</th>
-                        <th style="width: 150px;">តម្លៃសិក្សា</th>
+                        <th style="width: 100px;">តម្លៃសិក្សា</th>
+                         <th style="width: 100px;">គ្រូ៨០%</th>
+                         <th style="width: 100px;">សាលា២០%</th>
+                         <th style="width: 100px;">ថ្ងៃបង់ប្រាក់</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -438,6 +441,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
