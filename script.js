@@ -1,5 +1,5 @@
 // ១. ត្រូវប្រាកដថា URL នេះត្រឹមត្រូវតាម Deployment ចុងក្រោយរបស់អ្នក
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzIjImp2Ds_T96-bnLwhoH9Zm4asoJxOaOeqr1EOk9zq-Pqv6NwwcS3miCHc60xUgJo/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz3YoEncXIaiANF4U49rtwR1gDk5BZ-EEtVEcnbKCqpQc9Pp02sFQUkO2cYraY7p7CC/exec";
 
 let isEditMode = false;
 let originalName = "";
@@ -269,3 +269,4 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
