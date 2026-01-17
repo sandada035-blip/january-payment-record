@@ -9,6 +9,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+Khmer:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    /* បន្ថែម Style សម្រាប់ការបោះពុម្ព (Print Style) */
+    @media print {
+      .app-navbar, .btn, .fab-btn, .modal, .login-wrapper {
+        display: none !important; /* លាក់ប៊ូតុង និង Navbar ពេលបោះពុម្ព */
+      }
+      .content-box {
+        border: none !important;
+        box-shadow: none !important;
+      }
+      body {
+        background-color: white !important;
+        padding: 0 !important;
+      }
+      .table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+      }
+      .table th, .table td {
+        border: 1px solid #dee2e6 !important;
+        padding: 8px !important;
+      }
+      .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+    }
+    .print-header { display: none; } /* លាក់ Header ពេលមើលលើ Screen */
+  </style>
 </head>
 <body>
 
@@ -34,10 +65,20 @@
   </nav>
 
   <div id="dashboardSection" class="container-fluid p-3">
-    <div class="row g-3" id="statsRow">
-        </div>
+    <div class="print-header">
+        <h2 class="fw-bold">របាយការណ៍សរុបគ្រូបង្រៀន</h2>
+        <p>កាលបរិច្ឆេទ៖ <span id="printDate"></span></p>
+    </div>
+
+    <div class="row g-3" id="statsRow"></div>
+    
     <div class="content-box mt-4">
-      <div class="p-3 border-bottom"><h6 class="fw-bold m-0">Teacher Summary</h6></div>
+      <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold m-0">Teacher Summary</h6>
+        <button class="btn btn-sm btn-dark" onclick="printReport('dashboardSection')">
+            <i class="bi bi-printer"></i> Print Report
+        </button>
+      </div>
       <div class="table-responsive">
           <table class="table table-hover mb-0" id="teacherTable">
               <thead class="table-light">
@@ -50,10 +91,18 @@
   </div>
 
   <div id="studentSection" class="container-fluid p-3" style="display:none;">
+    <div class="print-header text-center">
+        <h2 class="fw-bold">បញ្ជីឈ្មោះសិស្ស</h2>
+    </div>
     <div class="content-box">
       <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
         <h5 class="fw-bold m-0">Student Records</h5>
-        <button class="btn btn-primary btn-sm" onclick="openStudentModal()">+ Add New</button>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-dark btn-sm" onclick="printReport('studentSection')">
+                <i class="bi bi-printer"></i> Print
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="openStudentModal()">+ Add New</button>
+        </div>
       </div>
       <div class="table-responsive">
           <table class="table table-hover mb-0">
@@ -99,6 +148,19 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // មុខងារ Print
+    function printReport(sectionId) {
+        // ដាក់កាលបរិច្ឆេទបច្ចុប្បន្ន
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('km-KH') + " " + now.toLocaleTimeString('km-KH');
+        const printDateElem = document.getElementById('printDate');
+        if(printDateElem) printDateElem.innerText = dateStr;
+
+        // បញ្ជាឱ្យ Browser បោះពុម្ព
+        window.print();
+    }
+</script>
 <script src="script.js"></script>
 </body>
 </html>
