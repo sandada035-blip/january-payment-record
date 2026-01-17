@@ -227,6 +227,94 @@ function printReport(sectionId) {
     window.print();
 }
 
+
+// មុខងារ Print របាយការណ៍សិស្ស (កែសម្រួលថ្មីតាមរូបភាព)
+function printReport() {
+    const printWindow = window.open('', '', 'height=800,width=1000');
+    const now = new Date();
+    const dateStr = "អគ្គមហេសី, ថ្ងៃទី" + now.getDate() + " ខែមករា ឆ្នាំ" + now.getFullYear();
+
+    let tableRows = allStudents.map(r => `
+        <tr>
+            <td style="border: 1px solid black; padding: 8px; text-align: left;">${r[0]}</td>
+            <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[1]}</td>
+            <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[2]}</td>
+            <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[3]}</td>
+            <td style="border: 1px solid black; padding: 8px; text-align: right;">${r[4]}</td>
+        </tr>
+    `).join('');
+
+    const reportHTML = `
+        <html>
+        <head>
+            <title>Student Report</title>
+            <link href="https://fonts.googleapis.com/css2?family=Khmer+OS+Siemreap&family=Khmer+OS+Muol+Light&display=swap" rel="stylesheet">
+            <style>
+                body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 40px; }
+                .header-title { font-family: 'Khmer OS Muol Light', serif; text-align: center; font-size: 20px; margin-bottom: 5px; }
+                .sub-title { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; }
+                .date-location { text-align: right; font-size: 14px; margin-bottom: 5px; margin-right: 50px; }
+                
+                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                th { border: 1px solid black; padding: 10px; background-color: #f2f2f2; font-family: 'Khmer OS Siemreap'; }
+                
+                .signature-section { margin-top: 50px; display: flex; justify-content: space-between; padding: 0 50px; }
+                .sig-block { text-align: center; width: 200px; }
+                .sig-title { font-weight: bold; margin-bottom: 60px; }
+                .sig-name { font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <div class="header-title">បញ្ជីឈ្មោះសិស្សរៀនបំប៉នបន្ថែម</div>
+            <div class="sub-title">Student Records</div>
+            
+            <div class="date-location">${dateStr}</div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ឈ្មោះ</th>
+                        <th>ភេទ</th>
+                        <th>ថ្នាក់</th>
+                        <th>គ្រូ</th>
+                        <th>តម្លៃ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+
+            <div class="signature-section">
+                <div class="sig-block">
+                    <div class="sig-title">បានឃើញ និងឯកភាព<br>នាយកសាលា</div>
+                    <div style="border-bottom: 1px solid black; width: 150px; margin: 0 auto 10px;"></div>
+                </div>
+                <div class="sig-block">
+                    <div class="sig-title" style="margin-bottom: 10px;">អ្នកចេញវិក្កយបត្រ</div>
+                    <div style="margin-bottom: 60px;"></div>
+                    <div style="border-bottom: 1px solid black; width: 150px; margin: 0 auto 10px;"></div>
+                    <div class="sig-name">ហាម ម៉ាលីនដា</div>
+                </div>
+            </div>
+
+            <script>
+                window.onload = function() { 
+                    window.print(); 
+                    setTimeout(function() { window.close(); }, 500);
+                };
+            </script>
+        </body>
+        </html>
+    `;
+
+    printWindow.document.write(reportHTML);
+    printWindow.document.close();
+}
+
+
+
+
 // មុខងារ Print វិក្កយបត្រ (Receipt) សម្រាប់សិស្សម្នាក់ៗ
 function printReceipt(index) {
     const s = allStudents[index];
@@ -269,4 +357,5 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
