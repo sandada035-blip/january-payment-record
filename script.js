@@ -232,7 +232,7 @@ function printReport(sectionId) {
 function printReport() {
     const printWindow = window.open('', '', 'height=900,width=1000');
     
-    // បង្កើតជួរដេកតារាង
+    // បង្កើតជួរដេកទិន្នន័យក្នុងតារាង
     let tableRows = allStudents.map(r => `
         <tr>
             <td style="border: 1px solid black; padding: 8px; text-align: left;">${r[0]}</td>
@@ -249,43 +249,133 @@ function printReport() {
             <title>Student Report Print</title>
             <link href="https://fonts.googleapis.com/css2?family=Khmer+OS+Siemreap&family=Khmer+OS+Muol+Light&display=swap" rel="stylesheet">
             <style>
-                body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 30px; color: black; }
+                body { 
+                    font-family: 'Khmer OS Siemreap', sans-serif; 
+                    padding: 40px; 
+                    color: black; 
+                    background-color: white;
+                }
                 
-                /* Header ផ្នែក Logo និងឈ្មោះសាលា */
-                .top-header { display: flex; align-items: center; margin-bottom: 20px; }
-                .logo-box { width: 80px; height: 80px; margin-right: 15px; }
-                .logo-box img { width: 100%; height: auto; }
-                .school-name { font-family: 'Khmer OS Muol Light'; font-size: 16px; }
+                /* ផ្នែកក្បាលទំព័រ: Logo និង ឈ្មោះសាលា */
+                .top-header { 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: flex-start;
+                    margin-bottom: 30px; 
+                }
+                .logo-box { 
+                    width: 100px; 
+                    height: auto; 
+                    margin-right: 20px; 
+                }
+                .logo-box img { 
+                    width: 100%; 
+                    display: block;
+                }
+                .school-info {
+                    text-align: left;
+                }
+                .school-kh { 
+                    font-family: 'Khmer OS Muol Light'; 
+                    font-size: 16px; 
+                    margin-bottom: 5px;
+                }
+                .school-en { 
+                    font-family: 'Inter', sans-serif; 
+                    font-weight: bold; 
+                    font-size: 14px; 
+                }
 
                 /* ចំណងជើងរបាយការណ៍ */
-                .report-title { font-family: 'Khmer OS Muol Light'; text-align: center; font-size: 20px; margin-top: 10px; }
-                .report-subtitle { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; text-decoration: underline; }
+                .report-header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                }
+                .report-title { 
+                    font-family: 'Khmer OS Muol Light'; 
+                    font-size: 22px; 
+                    margin-bottom: 5px;
+                }
+                .report-subtitle { 
+                    font-weight: bold; 
+                    font-size: 18px; 
+                }
 
-                /* តារាង */
-                table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-                th { border: 1px solid black; padding: 10px; background-color: #f2f2f2; font-family: 'Khmer OS Siemreap'; }
+                /* រចនាប័ទ្មតារាង */
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-bottom: 40px; 
+                }
+                th { 
+                    border: 1px solid black; 
+                    padding: 12px; 
+                    background-color: #f8f9fa; 
+                    font-family: 'Khmer OS Siemreap';
+                    font-weight: bold;
+                }
+                td {
+                    border: 1px solid black;
+                }
                 
-                /* ផ្នែកហត្ថលេខា និងកាលបរិច្ឆេទខាងក្រោម */
-                .footer-section { margin-top: 20px; width: 100%; }
-                .date-line { text-align: right; font-size: 14px; margin-bottom: 20px; margin-right: 30px; }
+                /* ផ្នែកខាងក្រោម: កាលបរិច្ឆេទ និង ហត្ថលេខា */
+                .footer-container {
+                    width: 100%;
+                }
+                .date-section { 
+                    text-align: right; 
+                    font-size: 15px; 
+                    margin-bottom: 25px; 
+                    padding-right: 40px;
+                }
                 
-                .sig-container { display: flex; justify-content: space-between; padding: 0 40px; }
-                .sig-block { text-align: center; width: 250px; }
-                .sig-title { font-family: 'Khmer OS Muol Light'; font-size: 14px; margin-bottom: 60px; line-height: 1.8; }
-                .sig-dots { border-bottom: 1px dotted black; width: 180px; margin: 0 auto 10px; }
-                .sig-name { font-family: 'Khmer OS Siemreap'; font-weight: bold; }
+                .signature-wrapper { 
+                    display: flex; 
+                    justify-content: space-between; 
+                    padding: 0 50px; 
+                }
+                .sig-box { 
+                    text-align: center; 
+                    width: 250px; 
+                }
+                .sig-role { 
+                    font-family: 'Khmer OS Muol Light'; 
+                    font-size: 15px; 
+                    margin-bottom: 80px; 
+                    line-height: 1.6;
+                }
+                .sig-line { 
+                    border-bottom: 1px dotted black; 
+                    width: 200px; 
+                    margin: 0 auto 10px; 
+                }
+                .sig-name { 
+                    font-family: 'Khmer OS Siemreap'; 
+                    font-weight: bold; 
+                    font-size: 15px;
+                }
+
+                @media print {
+                    body { padding: 20px; }
+                    button { display: none; }
+                }
             </style>
         </head>
         <body>
             <div class="top-header">
                 <div class="logo-box">
-                    <img src="https://via.placeholder.com/80" alt="Logo"> 
+                    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" alt="School Logo">
                 </div>
-                <div class="school-name">សាលារៀនព្រះរាជអគ្គមហេសី/PREAH REACH AKK MOHESSEY</div>
+                <div class="school-info">
+                    <div class="school-kh">សាលារៀន ព្រះរាជអគ្គមហេសី</div>
+                    <div class="school-en">PREAH REACH AKK MOHESSEY</div>
+                </div>
             </div>
 
-            <div class="report-title">បញ្ជីឈ្មោះសិស្សរៀនបំប៉នបន្ថែម</div>
-            <div class="report-subtitle">Student Records</div>
+            <div class="report-header">
+                <div class="report-title">បញ្ជីឈ្មោះសិស្សរៀនបំប៉នបន្ថែម</div>
+                <div class="report-subtitle">Student Records</div>
+            </div>
             
             <table>
                 <thead>
@@ -294,7 +384,7 @@ function printReport() {
                         <th style="width: 10%;">ភេទ</th>
                         <th style="width: 15%;">ថ្នាក់</th>
                         <th style="width: 25%;">គ្រូ</th>
-                        <th style="width: 25%;">តម្លៃ</th>
+                        <th style="width: 25%;">តម្លៃសិក្សា</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -302,22 +392,21 @@ function printReport() {
                 </tbody>
             </table>
 
-            <div class="footer-section">
-                <div class="date-line">
-                    ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦<br>
-                    ធ្វើនៅបន្ទាយ រាំងជៃ នៃ បន្ទាយរៃ
+            <div class="footer-container">
+                <div class="date-section">
+                    ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦ៃ
                 </div>
                 
-                <div class="sig-container">
-                    <div class="sig-block">
-                        <div class="sig-title">បានពិនិត្យ និងឯកភាព<br>នាយកសាលា</div>
-                        <div class="sig-dots"></div>
+                <div class="signature-wrapper">
+                    <div class="sig-box">
+                        <div class="sig-role">បានពិនិត្យ និងឯកភាព<br>នាយកសាលា</div>
+                        <div class="sig-line"></div>
                     </div>
                     
-                    <div class="sig-block">
-                        <div class="sig-title">អ្នកចេញវិក្កយបត្រ</div>
-                        <div class="sig-dots"></div>
-                        <div class="sig-name">តាម ម៉ាលីនដា</div>
+                    <div class="sig-box">
+                        <div class="sig-role">អ្នកចេញវិក្កយបត្រ</div>
+                        <div class="sig-line"></div>
+                        <div class="sig-name">ហម ម៉ាលីនដា</div>
                     </div>
                 </div>
             </div>
@@ -325,6 +414,7 @@ function printReport() {
             <script>
                 window.onload = function() { 
                     window.print(); 
+                    // បិទផ្ទាំង print វិញក្រោយពេលបោះពុម្ពរួច
                     setTimeout(function() { window.close(); }, 500);
                 };
             </script>
@@ -381,6 +471,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
