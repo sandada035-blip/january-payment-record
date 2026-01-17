@@ -377,38 +377,34 @@ function printReport(sectionId) {
 function printReport() {
     const printWindow = window.open('', '', 'height=900,width=1100');
     
-    // ១. គណនាទិន្នន័យសង្ខេប
+    // ១. គណនាទិន្នន័យសង្ខេបសម្រាប់ Card
     let totalStudents = allStudents.length;
     let totalFemale = allStudents.filter(s => s[1] === 'Female' || s[1] === 'ស្រី').length;
     let totalFee = 0;
     
-    // ២. បង្កើតជួរដេកតារាង
+    // ២. បង្កើតជួរដេកតារាង និងគណនាលុយលម្អិត
     let tableRows = allStudents.map(r => {
-        // ដកយកតែលេខពីតម្លៃសិក្សា
         let feeNum = parseInt(r[4].toString().replace(/[^0-9]/g, '')) || 0;
         totalFee += feeNum;
-        
         let teacherPart = feeNum * 0.8;
         let schoolPart = feeNum * 0.2;
         
-        // កែសម្រួល Index ថ្ងៃបង់ប្រាក់៖ ប្រសិនបើក្នុង Spreadsheet វាស្ថិតនៅជួរឈរទី ៨ ត្រូវប្រើ r[7]
-        // ប្រសិនបើបង្ហាញខុស ជួរឈរទី ៩ ត្រូវប្រើ r[8] ។ តាមរូបភាព r[7] ហាក់ដូចជាលទ្ធផលគណនាផ្សេង
-        // ដូច្នេះខ្ញុំបន្ថែម Logic ដើម្បីឆែកមើលកាលបរិច្ឆេទឱ្យបានត្រឹមត្រូវ
-        let payDate = r[7]; 
+        // បញ្ហាថ្ងៃបង់ប្រាក់៖ ពិនិត្យ Index ឱ្យបានត្រឹមត្រូវ (r[7] ឬ r[8] តាម Spreadsheet ជាក់ស្តែង)
+        let payDate = r[7];
         if (!payDate || payDate.toString().includes('KHR') || !isNaN(payDate)) {
-            payDate = new Date().toLocaleDateString('km-KH'); // ប្រើថ្ងៃបច្ចុប្បន្នបើរកមិនឃើញកាលបរិច្ឆេទ
+            payDate = new Date().toLocaleDateString('km-KH');
         }
 
         return `
             <tr>
-                <td style="border: 1px solid black; padding: 6px; text-align: left;">${r[0]}</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: center;">${r[1]}</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: center;">${r[2]}</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: left;">${r[3]}</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: right; font-weight: bold;">${feeNum.toLocaleString()} ៛</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: right; color: #0d6efd;">${teacherPart.toLocaleString()} ៛</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: right; color: #dc3545;">${schoolPart.toLocaleString()} ៛</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: center;">${payDate}</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: left;">${r[0]}</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[1]}</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[2]}</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: left;">${r[3]}</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: right; font-weight: bold;">${feeNum.toLocaleString()} ៛</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: right; color: blue;">${teacherPart.toLocaleString()} ៛</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: right; color: red;">${schoolPart.toLocaleString()} ៛</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center;">${payDate}</td>
             </tr>
         `;
     }).join('');
@@ -419,70 +415,62 @@ function printReport() {
     const reportHTML = `
         <html>
         <head>
-            <title>Student Report Detailed</title>
+            <title>Detailed Student Report</title>
             <link href="https://fonts.googleapis.com/css2?family=Khmer+OS+Siemreap&family=Khmer+OS+Muol+Light&display=swap" rel="stylesheet">
             <style>
-                body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 20px; color: black; background-color: white; }
+                body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 20px; color: black; }
                 
-                /* Header Layout */
-                .header-wrapper { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
-                .left-header { text-align: center; }
-                .right-header { text-align: center; font-family: 'Khmer OS Muol Light'; font-size: 14px; }
-                .logo-box { width: 70px; margin: 0 auto 5px; }
-                .logo-box img { width: 100%; display: block; }
-                .school-kh { font-family: 'Khmer OS Muol Light'; font-size: 14px; line-height: 1.8; }
+                /* Header */
+                .header-wrapper { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
+                .logo-box { width: 80px; text-align: center; }
+                .logo-box img { width: 100%; display: block; margin-bottom: 5px; }
+                .school-title { font-family: 'Khmer OS Muol Light'; font-size: 14px; line-height: 1.6; }
+                .right-header { text-align: center; font-family: 'Khmer OS Muol Light'; font-size: 14px; line-height: 1.8; }
 
-                .report-header { text-align: center; margin-bottom: 20px; }
-                .report-title { font-family: 'Khmer OS Muol Light'; font-size: 18px; text-decoration: underline; }
+                .main-title { text-align: center; font-family: 'Khmer OS Muol Light'; font-size: 18px; margin: 20px 0; text-decoration: underline; }
 
-                /* Stats Cards */
-                .stats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
-                .stat-card { border: 1px solid black; padding: 6px; text-align: center; border-radius: 4px; }
-                .stat-label { font-size: 10px; font-weight: bold; margin-bottom: 2px; }
-                .stat-value { font-size: 12px; font-weight: bold; }
+                /* Stats Summary Cards */
+                .stats-container { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 20px; }
+                .stat-card { border: 1.5px solid black; padding: 8px; text-align: center; border-radius: 6px; flex: 1; }
+                .stat-label { font-size: 11px; font-weight: bold; margin-bottom: 3px; }
+                .stat-value { font-size: 13px; font-weight: bold; }
 
-                /* Table Design */
-                table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 12px; }
-                th { border: 1px solid black; padding: 8px; background-color: #f2f2f2; font-family: 'Khmer OS Siemreap'; }
-                
-                .footer-container { width: 100%; margin-top: 20px; }
-                .date-section { text-align: right; font-size: 13px; margin-bottom: 10px; padding-right: 60px; }
-                
-                .signature-wrapper { display: flex; justify-content: space-between; padding: 0 80px; }
+                /* Table - កែសម្រួលទទឹង Columns ឱ្យត្រឹមត្រូវ */
+                table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 30px; }
+                th { border: 1px solid black; padding: 10px 5px; background-color: #f2f2f2; font-family: 'Khmer OS Siemreap'; font-size: 12px; }
+                td { border: 1px solid black; font-size: 12px; word-wrap: break-word; }
+
+                /* Footer Signature */
+                .footer-section { width: 100%; margin-top: 20px; }
+                .date-line { text-align: right; font-size: 13px; margin-bottom: 15px; padding-right: 50px; }
+                .sig-wrapper { display: flex; justify-content: space-between; padding: 0 70px; }
                 .sig-box { text-align: center; width: 220px; }
-                .sig-role { font-family: 'Khmer OS Muol Light'; font-size: 13px; margin-bottom: 60px; }
-                .sig-line { border-bottom: 1px dotted black; width: 100%; margin: 10px 0; }
-                .sig-name { font-weight: bold; font-size: 13px; }
+                .sig-role { font-family: 'Khmer OS Muol Light'; font-size: 13px; margin-bottom: 70px; }
+                .sig-name { font-weight: bold; font-size: 14px; }
 
                 @media print {
                     @page { size: A4 landscape; margin: 1cm; }
-                    .stat-card { border: 1px solid black !important; -webkit-print-color-adjust: exact; }
+                    .stat-card { border: 1.5px solid black !important; }
                 }
             </style>
         </head>
         <body>
             <div class="header-wrapper">
-                <div class="left-header">
-                    <div class="logo-box">
-                        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" alt="Logo">
-                    </div>
-                    <div class="school-kh">សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី<br>នរោត្តមមុនីនាថសីហនុ</div>
+                <div class="logo-box">
+                    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo">
+                    <div class="school-title">សាលាបឋមសិក្សាសម្តេច<br>ព្រះរាជអគ្គមហេសី</div>
                 </div>
-                <div class="right-header">
-                    ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ
-                </div>
+                <div class="right-header">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
             </div>
 
-            <div class="report-header">
-                <div class="report-title">របាយការណ៍លម្អិតសិស្សរៀនបំប៉នបន្ថែម</div>
-            </div>
+            <div class="main-title">របាយការណ៍លម្អិតសិស្សរៀនបំប៉នបន្ថែម</div>
 
             <div class="stats-container">
                 <div class="stat-card"><div class="stat-label">សិស្សសរុប</div><div class="stat-value">${totalStudents} នាក់</div></div>
                 <div class="stat-card"><div class="stat-label">សរុបស្រី</div><div class="stat-value">${totalFemale} នាក់</div></div>
                 <div class="stat-card"><div class="stat-label">ទឹកប្រាក់សរុប</div><div class="stat-value">${totalFee.toLocaleString()} ៛</div></div>
-                <div class="stat-card"><div class="stat-label">គ្រូទទួលបាន (80%)</div><div class="stat-value">${fee80.toLocaleString()} ៛</div></div>
-                <div class="stat-card"><div class="stat-label">សាលាទទួលបាន (20%)</div><div class="stat-value">${fee20.toLocaleString()} ៛</div></div>
+                <div class="stat-card" style="border-color: blue;"><div class="stat-label text-primary">គ្រូបាន (80%)</div><div class="stat-value">${fee80.toLocaleString()} ៛</div></div>
+                <div class="stat-card" style="border-color: red;"><div class="stat-label text-danger">សាលាបាន (20%)</div><div class="stat-value">${fee20.toLocaleString()} ៛</div></div>
             </div>
             
             <table>
@@ -491,11 +479,11 @@ function printReport() {
                         <th style="width: 18%;">ឈ្មោះសិស្ស</th>
                         <th style="width: 7%;">ភេទ</th>
                         <th style="width: 8%;">ថ្នាក់</th>
-                        <th style="width: 15%;">គ្រូបង្រៀន</th>
+                        <th style="width: 16%;">គ្រូបង្រៀន</th>
                         <th style="width: 13%;">តម្លៃសិក្សា</th>
                         <th style="width: 13%;">គ្រូ (80%)</th>
                         <th style="width: 13%;">សាលា (20%)</th>
-                        <th style="width: 13%;">ថ្ងៃបង់ប្រាក់</th>
+                        <th style="width: 12%;">ថ្ងៃបង់ប្រាក់</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -503,29 +491,23 @@ function printReport() {
                 </tbody>
             </table>
 
-            <div class="footer-container">
-                <div class="date-section">
-                    ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦
-                </div>
-                
-                <div class="signature-wrapper">
+            <div class="footer-section">
+                <div class="date-line">ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦</div>
+                <div class="sig-wrapper">
                     <div class="sig-box">
-                        <div class="sig-role">បានពិនិត្យ និងឯកភាព<br>នាយកសាលា</div>
-                        <div class="sig-line" style="margin-top: 40px;"></div>
+                        <div class="sig-role">បានឃើញ និងឯកភាព<br>នាយកសាលា</div>
+                        <div style="border-bottom: 1px dotted black; width: 100%; margin-top: 50px;"></div>
                     </div>
                     <div class="sig-box">
                         <div class="sig-role">អ្នកចេញវិក្កយបត្រ</div>
-                        <div style="margin-top: 50px;"></div>
+                        <div style="margin-top: 60px;"></div>
                         <div class="sig-name">ហម ម៉ាលីនដា</div>
                     </div>
                 </div>
             </div>
 
             <script>
-                window.onload = function() { 
-                    window.print(); 
-                    setTimeout(function() { window.close(); }, 500);
-                };
+                window.onload = function() { window.print(); setTimeout(() => window.close(), 500); };
             </script>
         </body>
         </html>
@@ -558,7 +540,7 @@ function printReceipt(index) {
         <body>
             <div class="receipt-box">
                 <div class="header">វិក្កយបត្របង់ប្រាក់</div>
-                <div style="font-size: 14px;">សាលារៀន ព្រះរាជអគ្គមហេសី</div>
+                <div style="font-size: 14px;">សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</div>
                 <div class="line"></div>
                 <div class="details">
                     <div>ឈ្មោះសិស្ស: <b>${s[0]}</b></div>
@@ -578,6 +560,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
