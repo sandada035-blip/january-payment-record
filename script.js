@@ -7,11 +7,15 @@ let allStudents = [];
 let currentUserRole = "User"; // កំណត់ Role លំនាំដើម
 
 // --- 1. Authentication ---
+// --- 1. Authentication ---
 async function login() {
     const u = document.getElementById('username').value.trim();
     const p = document.getElementById('password').value.trim();
     
-    if(!u || !p) return Swal.fire('Warning', 'សូមបញ្ចូល Username និង Password', 'warning');
+    if(!u || !p) {
+        // បង្ហាញសារប្រសិនបើមិនបានបញ្ចូល Username ឬ Password
+        return Swal.fire('Warning', 'សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យសម្ងាត់', 'warning');
+    }
     
     Swal.fire({title: 'កំពុងផ្ទៀងផ្ទាត់...', didOpen: () => Swal.showLoading(), allowOutsideClick: false});
     
@@ -25,8 +29,19 @@ async function login() {
         applyPermissions();
         showSection('dashboard');
         Swal.close();
+        // បង្ហាញសារជោគជ័យ
+        Swal.fire({
+            title: 'ជោគជ័យ!',
+            text: 'អ្នកបានចូលប្រើប្រាស់ដោយជោគជ័យ!',
+            icon: 'success',
+            timer: 2000, // បិទដោយស្វ័យប្រវត្តិក្រោយ ២ វិនាទី
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
     } else {
-        Swal.fire('បរាជ័យ', res ? res.message : "Network Error", 'error');
+        Swal.close(); // បិទ Loading Swal មុននឹងបង្ហាញ Error
+        // បង្ហាញសារបរាជ័យតាមការស្នើសុំ
+        Swal.fire('បរាជ័យ', 'សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ ឬពាក្យសម្ងាត់ម្ដងទៀត!', 'error');
     }
 }
 
@@ -433,6 +448,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
