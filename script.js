@@ -129,6 +129,81 @@ async function callAPI(funcName, ...args) {
 }
 
 // (បន្ថែមអនុគមន៍ loadDashboard, loadStudents... ដូចកូដមុនរបស់អ្នក)
+// ៣. មុខងារ PRINT (តាមរូបភាពដែលបានកែសម្រួលចុងក្រោយ)
+function printReport() {
+    const printWindow = window.open('', '', 'height=900,width=1100');
+    let totalStudents = allStudents.length;
+    let totalFemale = allStudents.filter(s => s[1] === 'Female' || s[1] === 'ស្រី').length;
+    let totalFee = 0;
+    
+    let tableRows = allStudents.map(r => {
+        let feeNum = parseInt(r[4].toString().replace(/[^0-9]/g, '')) || 0;
+        totalFee += feeNum;
+        let payDate = r[7] && !r[7].toString().includes('KHR') ? r[7] : new Date().toLocaleDateString('km-KH');
+        return `
+            <tr>
+                <td style="border: 1px solid black; padding: 6px;">${r[0]}</td>
+                <td style="border: 1px solid black; padding: 6px; text-align: center;">${r[1]}</td>
+                <td style="border: 1px solid black; padding: 6px; text-align: center;">${r[2]}</td>
+                <td style="border: 1px solid black; padding: 6px;">${r[3]}</td>
+                <td style="border: 1px solid black; padding: 6px; text-align: right;">${feeNum.toLocaleString()} ៛</td>
+                <td style="border: 1px solid black; padding: 6px; text-align: right; color: blue;">${(feeNum * 0.8).toLocaleString()} ៛</td>
+                <td style="border: 1px solid black; padding: 6px; text-align: right; color: red;">${(feeNum * 0.2).toLocaleString()} ៛</td>
+                <td style="border: 1px solid black; padding: 6px; text-align: center;">${payDate}</td>
+            </tr>`;
+    }).join('');
+
+    const reportHTML = `
+        <html>
+        <head>
+            <title>Report</title>
+            <style>
+                body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 20px; }
+                .header-table { width: 100%; display: flex; justify-content: space-between; margin-bottom: 20px; }
+                .report-title { font-family: 'Khmer OS Muol Light'; text-align: center; font-size: 18px; margin-bottom: 20px; text-decoration: underline; }
+                .stats { display: flex; gap: 10px; margin-bottom: 20px; }
+                .stat-box { border: 1px solid black; padding: 5px 15px; text-align: center; flex: 1; border-radius: 4px; }
+                table { width: 100%; border-collapse: collapse; font-size: 12px; }
+                th { border: 1px solid black; background: #eee; padding: 8px; }
+                .footer { margin-top: 30px; display: flex; justify-content: space-between; padding: 0 50px; }
+            </style>
+        </head>
+        <body>
+            <div class="header-table">
+                <div style="text-align:center"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" width="70"><br><small>សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</small></div>
+                <div style="text-align:center; font-family:'Khmer OS Muol Light'">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+            </div>
+            <div class="report-title">របាយការណ៍លម្អិតសិស្សរៀនបំប៉នបន្ថែម</div>
+            <div class="stats">
+                <div class="stat-box">សិស្សសរុប: <b>${totalStudents}</b></div>
+                <div class="stat-box">សរុបស្រី: <b>${totalFemale}</b></div>
+                <div class="stat-box">សរុប: <b>${totalFee.toLocaleString()} ៛</b></div>
+            </div>
+            <table>
+                <thead><tr><th>ឈ្មោះសិស្ស</th><th>ភេទ</th><th>ថ្នាក់</th><th>គ្រូ</th><th>តម្លៃសិក្សា</th><th>គ្រូ(80%)</th><th>សាលា(20%)</th><th>ថ្ងៃបង់ប្រាក់</th></tr></thead>
+                <tbody>${tableRows}</tbody>
+            </table>
+            <div style="text-align:right; margin-top:20px;">ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦</div>
+            <div class="footer">
+                <div><b>នាយកសាលា</b><br><br><br>..........................</div>
+                <div><b>អ្នកចេញវិក្កយបត្រ</b><br><br><br><b>ហម ម៉ាលីនដា</b></div>
+            </div>
+            <script>window.onload = function(){ window.print(); window.close(); }</script>
+        </body></html>`;
+    printWindow.document.write(reportHTML);
+    printWindow.document.close();
+}
+
+// មុខងារហៅ API (Core)
+async function callAPI(funcName, ...args) {
+    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
+    try {
+        const response = await fetch(url);
+        return await response.json();
+    } catch (e) { return null; }
+}
+
+// (បន្ថែមអនុគមន៍ loadDashboard, loadStudents... ដូចកូដមុនរបស់អ្នក)
 function applyPermissions() {
     const adminElements = document.querySelectorAll('.admin-only');
     adminElements.forEach(el => {
@@ -532,6 +607,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
