@@ -74,17 +74,14 @@ body {
     .stat-card { padding: 1rem; }
     .stat-card .h4 { font-size: 1.1rem; }
     
-    /* បង្រួមតារាងលើទូរស័ព្ទ */
-   /* ទៅជាកូដថ្មីនេះវិញ */
-.table { 
-    font-size: 0.85rem; 
-    display: block;        /* បន្ថែមចំណុចនេះ */
-    width: 100%;          /* បន្ថែមចំណុចនេះ */
-    overflow-x: auto;     /* បន្ថែមចំណុចនេះ ដើម្បីឱ្យអូសទៅឆ្វេងស្តាំបាន */
-    -webkit-overflow-scrolling: touch; 
-}
+    .table { 
+        font-size: 0.85rem; 
+        display: block; 
+        width: 100%; 
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch; 
+    }
     
-    /* លាក់ Column ខ្លះដើម្បីកុំឱ្យចង្អៀតលើ Mobile (ត្រូវថែម class នេះក្នុង HTML) */
     .d-none-mobile { display: none !important; }
 }
 
@@ -95,10 +92,56 @@ body {
     padding: 4px 8px;
 }
 
-
-
-/* --- ស្ទីលសម្រាប់បោះពុម្ព (Print View) --- */
+/* --- ស្ទីលសម្រាប់បោះពុម្ព (Print View) កែលម្អថ្មី --- */
 @media print {
-    .no-print { display: none !important; }
-    .card { border: none !important; box-shadow: none !important; }
+    /* លាក់អ្វីដែលមិនចាំបាច់ */
+    .app-navbar, .fab-btn, .btn, .no-print, #loginSection { 
+        display: none !important; 
+    }
+    
+    /* កែសម្រួល Layout សម្រាប់ក្រដាស */
+    body { 
+        background-color: white !important; 
+        color: black !important;
+        padding: 0;
+        margin: 0;
+    }
+
+    .container-fluid {
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .content-box { 
+        border: none !important; 
+        box-shadow: none !important; 
+        width: 100% !important;
+    }
+
+    /* រចនាតារាងពេល Print */
+    .table {
+        width: 100% !important;
+        border: 1px solid #000 !important;
+        font-size: 10pt !important;
+    }
+
+    .table th, .table td {
+        border: 1px solid #000 !important;
+        padding: 8px !important;
+        color: black !important;
+    }
+
+    /* បង្ហាញ Header សម្រាប់ Print (ដែលយើងដាក់ក្នុង HTML) */
+    .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    /* បង្ខំឱ្យ Browser បោះពុម្ពពណ៌ (Background Colors) */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 }
