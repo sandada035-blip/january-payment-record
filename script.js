@@ -2,7 +2,7 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzIjImp2Ds_T96-bnLw
 let allStudents = [];
 let currentUserRole = "User";
 
-// ១. LOGIN & LOGOUT
+// --- 1. Login Logic ---
 async function login() {
     const u = document.getElementById('username').value.trim();
     const p = document.getElementById('password').value.trim();
@@ -12,11 +12,10 @@ async function login() {
     const res = await callAPI('checkLogin', u, p); 
 
     if(res && res.success) {
-        currentUserRole = res.role; // "Admin" ឬ "User"
+        currentUserRole = res.role;
         document.getElementById('loginSection').classList.replace('d-flex', 'd-none');
         document.getElementById('mainApp').style.display = 'block';
         
-        // បែងចែកសិទ្ធិ
         const adminEls = document.querySelectorAll('.admin-only');
         adminEls.forEach(el => el.style.setProperty('display', currentUserRole === 'Admin' ? 'inline-block' : 'none', 'important'));
 
@@ -29,66 +28,53 @@ async function login() {
 
 function logout() { location.reload(); }
 
-// ២. RENDER TABLE
+// --- 2. Teacher Summary Rendering ---
+async function loadDashboard() {
+    const res = await callAPI('getTeacherData');
+    if(!res) return;
+    
+    let totalS = 0, totalF = 0;
+    res.rows.forEach(r => {
+        totalS += parseInt(r[2]) || 0;
+        totalF += parseInt(r[3].replace(/[^0-9]/g, '')) || 0;
+    });
+
+    document.getElementById('statsRow').innerHTML = `
+        <div class="col-6 col-md-4"><div class="stat-card border-primary p-2 bg-white shadow-sm rounded-3"><small>គ្រូសរុប</small><div class="h5 m-0">${res.rows.length}</div></div></div>
+        <div class="col-6 col-md-4"><div class="stat-card border-info p-2 bg-white shadow-sm rounded-3"><small>សិស្សសរុប</small><div class="h5 m-0">${totalS}</div></div></div>
+        <div class="col-12 col-md-4"><div class="stat-card border-success p-2 bg-white shadow-sm rounded-3"><small>ចំណូលសរុប</small><div class="h5 m-0 text-success">${totalF.toLocaleString()} ៛</div></div></div>
+    `;
+
+    document.getElementById('teacherBody').innerHTML = res.rows.map(r => `
+        <tr class="text-nowrap">
+            <td>${r[0]}</td> <td>${r[1]}</td> <td>${r[2]}</td> <td class="text-primary fw-bold">${r[3]}</td> <td class="text-success">${r[4]}</td> <td class="text-danger">${r[5]}</td> </tr>
+    `).join('');
+}
+
+// --- 3. Student List Rendering ---
+async function loadStudents() {
+    document.getElementById('studentLoading')?.classList.remove('d-none');
+    const res = await callAPI('getStudentData');
+    document.getElementById('studentLoading')?.classList.add('d-none');
+    if(!res) return;
+    allStudents = res.rows;
+    renderStudentTable(res.rows);
+}
+
 function renderStudentTable(rows) {
     document.getElementById('studentBody').innerHTML = rows.map((r, i) => `
         <tr>
-            <td data-label="ឈ្មោះ" class="fw-bold text-primary">${r[0]}</td>
-            <td data-label="ភេទ">${r[1]}</td>
-            <td data-label="គ្រូ">${r[3]}</td>
-            <td data-label="តម្លៃ" class="text-success fw-bold">${r[4]}</td>
-            <td data-label="សកម្មភាព" class="admin-only" style="display: ${currentUserRole === 'Admin' ? 'table-cell' : 'none'}">
-                <button class="btn btn-sm btn-outline-warning" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(${i})"><i class="bi bi-trash"></i></button>
+            <td class="fw-bold text-primary">${r[0]}</td> <td>${r[1]}</td> <td>${r[2]}</td> <td>${r[3]}</td> <td class="text-success fw-bold">${r[4]}</td> <td class="admin-only" style="display: ${currentUserRole === 'Admin' ? 'table-cell' : 'none'}">
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-warning" onclick="editStudent(${i})"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(${i})"><i class="bi bi-trash"></i></button>
+                </div>
             </td>
         </tr>
     `).join('');
 }
 
-// ៣. PRINT REPORT
-function printReport() {
-    const printWindow = window.open('', '', 'height=900,width=1100');
-    let totalFee = 0;
-    let tableRows = allStudents.map(r => {
-        let feeNum = parseInt(r[4].replace(/[^0-9]/g, '')) || 0;
-        totalFee += feeNum;
-        let payDate = r[7] && !r[7].toString().includes('KHR') ? r[7] : new Date().toLocaleDateString('km-KH');
-        return `<tr>
-            <td style="border:1px solid black; padding:8px;">${r[0]}</td>
-            <td style="border:1px solid black; padding:8px; text-align:center;">${r[1]}</td>
-            <td style="border:1px solid black; padding:8px; text-align:center;">${r[2]}</td>
-            <td style="border:1px solid black; padding:8px;">${r[3]}</td>
-            <td style="border:1px solid black; padding:8px; text-align:right;">${feeNum.toLocaleString()} ៛</td>
-            <td style="border:1px solid black; padding:8px; text-align:right; color:blue;">${(feeNum*0.8).toLocaleString()} ៛</td>
-            <td style="border:1px solid black; padding:8px; text-align:right; color:red;">${(feeNum*0.2).toLocaleString()} ៛</td>
-            <td style="border:1px solid black; padding:8px; text-align:center;">${payDate}</td>
-        </tr>`;
-    }).join('');
-
-    const reportHTML = `
-        <html><head><style>body{font-family:'Khmer OS Siemreap';padding:20px;} table{width:100%; border-collapse:collapse; table-layout:fixed;}</style></head>
-        <body>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div style="text-align:center"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" width="70"><br><small>សាលារៀន ព្រះរាជអគ្គមហេសី</small></div>
-                <div style="text-align:center; font-family:'Khmer OS Muol Light'">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
-            </div>
-            <h3 style="text-align:center; font-family:'Khmer OS Muol Light'; margin-top:30px; text-decoration:underline;">របាយការណ៍សិស្សរៀនបំប៉នបន្ថែម</h3>
-            <table style="margin-top:20px;">
-                <thead><tr><th style="border:1px solid black; width:20%;">ឈ្មោះ</th><th style="border:1px solid black;">ភេទ</th><th style="border:1px solid black;">ថ្នាក់</th><th style="border:1px solid black;">គ្រូ</th><th style="border:1px solid black;">សរុប</th><th style="border:1px solid black;">គ្រូ(80%)</th><th style="border:1px solid black;">សាលា(20%)</th><th style="border:1px solid black;">ថ្ងៃបង់</th></tr></thead>
-                <tbody>${tableRows}</tbody>
-            </table>
-            <div style="text-align:right; margin-top:30px;">ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦</div>
-            <div style="display:flex; justify-content:space-between; padding:0 50px; margin-top:20px;">
-                <div style="text-align:center">បានឃើញ និងឯកភាព<br><b>នាយកសាលា</b></div>
-                <div style="text-align:center"><b>អ្នកចេញវិក្កយបត្រ</b><br><br><br><b>ហម ម៉ាលីនដា</b></div>
-            </div>
-            <script>window.onload=function(){window.print();window.close();}</script>
-        </body></html>`;
-    printWindow.document.write(reportHTML);
-    printWindow.document.close();
-}
-
-// API CORE
+// --- API Core & Navigation ---
 async function callAPI(funcName, ...args) {
     const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
     try { const response = await fetch(url); return await response.json(); } catch(e) { return null; }
@@ -101,130 +87,7 @@ function showSection(id) {
     if(id === 'students') loadStudents();
 }
 
-async function loadDashboard() {
-    const res = await callAPI('getTeacherData');
-    if(!res) return;
-    let studentCount = 0; let totalFee = 0;
-    res.rows.forEach(r => {
-        studentCount += parseInt(r[2]) || 0;
-        totalFee += parseInt(r[3].replace(/[^0-9]/g, '')) || 0;
-    });
-    document.getElementById('statsRow').innerHTML = `
-        <div class="col-6 col-md-4"><div class="stat-card"><small class="text-muted">សិស្សសរុប</small><div class="h5 mb-0">${studentCount}</div></div></div>
-        <div class="col-6 col-md-4"><div class="stat-card"><small class="text-muted">គ្រូសរុប</small><div class="h5 mb-0">${res.rows.length}</div></div></div>
-        <div class="col-12 col-md-4"><div class="stat-card"><small class="text-muted">ចំណូលសរុប</small><div class="h5 mb-0 text-success">${totalFee.toLocaleString()} ៛</div></div></div>`;
-    document.getElementById('teacherBody').innerHTML = res.rows.map(r => `<tr><td>${r[0]}</td><td>${r[2]}</td><td>${r[3]}</td><td class="text-danger">${r[5]}</td></tr>`).join('');
-}
-
-async function loadStudents() {
-    document.getElementById('studentLoading')?.classList.remove('d-none');
-    const res = await callAPI('getStudentData');
-    document.getElementById('studentLoading')?.classList.add('d-none');
-    if(!res) return;
-    allStudents = res.rows;
-    renderStudentTable(res.rows);
-}
-// មុខងារហៅ API (Core)
-async function callAPI(funcName, ...args) {
-    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
-    try {
-        const response = await fetch(url);
-        return await response.json();
-    } catch (e) { return null; }
-}
-
-// (បន្ថែមអនុគមន៍ loadDashboard, loadStudents... ដូចកូដមុនរបស់អ្នក)
-// ៣. មុខងារ PRINT (តាមរូបភាពដែលបានកែសម្រួលចុងក្រោយ)
-function printReport() {
-    const printWindow = window.open('', '', 'height=900,width=1100');
-    let totalStudents = allStudents.length;
-    let totalFemale = allStudents.filter(s => s[1] === 'Female' || s[1] === 'ស្រី').length;
-    let totalFee = 0;
-    
-    let tableRows = allStudents.map(r => {
-        let feeNum = parseInt(r[4].toString().replace(/[^0-9]/g, '')) || 0;
-        totalFee += feeNum;
-        let payDate = r[7] && !r[7].toString().includes('KHR') ? r[7] : new Date().toLocaleDateString('km-KH');
-        return `
-            <tr>
-                <td style="border: 1px solid black; padding: 6px;">${r[0]}</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: center;">${r[1]}</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: center;">${r[2]}</td>
-                <td style="border: 1px solid black; padding: 6px;">${r[3]}</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: right;">${feeNum.toLocaleString()} ៛</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: right; color: blue;">${(feeNum * 0.8).toLocaleString()} ៛</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: right; color: red;">${(feeNum * 0.2).toLocaleString()} ៛</td>
-                <td style="border: 1px solid black; padding: 6px; text-align: center;">${payDate}</td>
-            </tr>`;
-    }).join('');
-
-    const reportHTML = `
-        <html>
-        <head>
-            <title>Report</title>
-            <style>
-                body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 20px; }
-                .header-table { width: 100%; display: flex; justify-content: space-between; margin-bottom: 20px; }
-                .report-title { font-family: 'Khmer OS Muol Light'; text-align: center; font-size: 18px; margin-bottom: 20px; text-decoration: underline; }
-                .stats { display: flex; gap: 10px; margin-bottom: 20px; }
-                .stat-box { border: 1px solid black; padding: 5px 15px; text-align: center; flex: 1; border-radius: 4px; }
-                table { width: 100%; border-collapse: collapse; font-size: 12px; }
-                th { border: 1px solid black; background: #eee; padding: 8px; }
-                .footer { margin-top: 30px; display: flex; justify-content: space-between; padding: 0 50px; }
-            </style>
-        </head>
-        <body>
-            <div class="header-table">
-                <div style="text-align:center"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" width="70"><br><small>សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</small></div>
-                <div style="text-align:center; font-family:'Khmer OS Muol Light'">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
-            </div>
-            <div class="report-title">របាយការណ៍លម្អិតសិស្សរៀនបំប៉នបន្ថែម</div>
-            <div class="stats">
-                <div class="stat-box">សិស្សសរុប: <b>${totalStudents}</b></div>
-                <div class="stat-box">សរុបស្រី: <b>${totalFemale}</b></div>
-                <div class="stat-box">សរុប: <b>${totalFee.toLocaleString()} ៛</b></div>
-            </div>
-            <table>
-                <thead><tr><th>ឈ្មោះសិស្ស</th><th>ភេទ</th><th>ថ្នាក់</th><th>គ្រូ</th><th>តម្លៃសិក្សា</th><th>គ្រូ(80%)</th><th>សាលា(20%)</th><th>ថ្ងៃបង់ប្រាក់</th></tr></thead>
-                <tbody>${tableRows}</tbody>
-            </table>
-            <div style="text-align:right; margin-top:20px;">ថ្ងៃទី........ខែ........ឆ្នាំ២០២៦</div>
-            <div class="footer">
-                <div><b>នាយកសាលា</b><br><br><br>..........................</div>
-                <div><b>អ្នកចេញវិក្កយបត្រ</b><br><br><br><b>ហម ម៉ាលីនដា</b></div>
-            </div>
-            <script>window.onload = function(){ window.print(); window.close(); }</script>
-        </body></html>`;
-    printWindow.document.write(reportHTML);
-    printWindow.document.close();
-}
-
-// មុខងារហៅ API (Core)
-async function callAPI(funcName, ...args) {
-    const url = `${WEB_APP_URL}?func=${funcName}&args=${encodeURIComponent(JSON.stringify(args))}`;
-    try {
-        const response = await fetch(url);
-        return await response.json();
-    } catch (e) { return null; }
-}
-
-// (បន្ថែមអនុគមន៍ loadDashboard, loadStudents... ដូចកូដមុនរបស់អ្នក)
-function applyPermissions() {
-    const adminElements = document.querySelectorAll('.admin-only');
-    adminElements.forEach(el => {
-        el.style.setProperty('display', currentUserRole === 'Admin' ? 'flex' : 'none', 'important');
-    });
-}
-
-function logout() { location.reload(); }
-
-// --- 2. Navigation ---
-function showSection(id) {
-    document.getElementById('dashboardSection').style.display = id === 'dashboard' ? 'block' : 'none';
-    document.getElementById('studentSection').style.display = id === 'students' ? 'block' : 'none';
-    if(id === 'dashboard') loadDashboard();
-    if(id === 'students') loadStudents();
-}
+// (Print Report, Modal, and other functions same as previous...)
 
 // --- 3. API Core ---
 async function callAPI(funcName, ...args) {
@@ -612,6 +475,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
