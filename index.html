@@ -4,46 +4,58 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>School Admin Pro - Role Based Access</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com/css2?family=Khmer+OS+Siemreap&family=Khmer+OS+Muol+Light&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+
   <style>
-    /* បន្ថែម CSS សម្រាប់គ្រប់គ្រងការបង្ហាញប៊ូតុង */
     .admin-visible { display: inline-block !important; }
     .admin-hidden { display: none !important; }
-    
+
     @media print {
       .no-print { display: none !important; }
     }
   </style>
 </head>
+
 <body>
 
-<section id="loginSection" class="d-flex align-items-center justify-content-center min-vh-100" style="background: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);">
-    <div class="card shadow-lg p-4 rounded-4" style="width: 100%; max-width: 400px; border: none;">
-        <div class="card-body text-center">
-            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" alt="Logo" class="mb-3" style="width: 80px;">
-            <h4 class="fw-bold text-primary">ប្រព័ន្ធគ្រប់គ្រងសិស្ស</h4>
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="username" placeholder="User">
-                <label>ឈ្មោះអ្នកប្រើប្រាស់</label>
-            </div>
-            <div class="form-floating mb-4">
-                <input type="password" class="form-control" id="password" placeholder="Pass">
-                <label>ពាក្យសម្ងាត់</label>
-            </div>
-            <button class="btn btn-primary w-100 py-3 fw-bold" onclick="login()">ចូលប្រព័ន្ធ</button>
-        </div>
+<!-- LOGIN -->
+<section id="loginSection" class="d-flex align-items-center justify-content-center min-vh-100"
+  style="background: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);">
+  <div class="card shadow-lg p-4 rounded-4" style="width:100%;max-width:400px;border:none;">
+    <div class="card-body text-center">
+      <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo"
+        style="width:80px" class="mb-3">
+      <h4 class="fw-bold text-primary">ប្រព័ន្ធគ្រប់គ្រងសិស្ស</h4>
+
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="username" placeholder="User">
+        <label>ឈ្មោះអ្នកប្រើប្រាស់</label>
+      </div>
+
+      <div class="form-floating mb-4">
+        <input type="password" class="form-control" id="password" placeholder="Pass">
+        <label>ពាក្យសម្ងាត់</label>
+      </div>
+
+      <button class="btn btn-primary w-100 py-3 fw-bold" onclick="login()">ចូលប្រព័ន្ធ</button>
     </div>
+  </div>
 </section>
 
+<!-- MAIN APP -->
 <div id="mainApp" style="display:none;">
+
+  <!-- NAV -->
   <nav class="navbar navbar-dark bg-primary p-2 sticky-top no-print">
     <div class="container-fluid">
-      <span class="navbar-brand fw-bold small"><i class="bi bi-mortarboard"></i> SCHOOL ADMIN</span>
+      <span class="navbar-brand fw-bold small">
+        <i class="bi bi-mortarboard"></i> SCHOOL ADMIN
+      </span>
       <div class="d-flex gap-2">
         <button class="btn btn-sm btn-light" onclick="showSection('dashboard')">Home</button>
         <button class="btn btn-sm btn-light" onclick="showSection('students')">Students</button>
@@ -52,45 +64,76 @@
     </div>
   </nav>
 
+  <!-- DASHBOARD -->
   <div id="dashboardSection" class="container p-3">
     <div class="row g-2 mb-3" id="statsRow"></div>
+
     <div class="bg-white p-3 rounded-3 shadow-sm">
-        <div class="d-flex justify-content-between mb-2">
-            <h6 class="fw-bold m-0">Teacher Summary</h6>
-            <button class="btn btn-sm btn-outline-dark" onclick="printReport()"><i class="bi bi-printer"></i></button>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-sm align-middle">
-                <thead><tr><th>គ្រូ</th><th>សិស្ស</th><th>សរុប</th><th>២០%</th></tr></thead>
-                <tbody id="teacherBody"></tbody>
-            </table>
-        </div>
+      <div class="d-flex justify-content-between mb-2">
+        <h6 class="fw-bold m-0">Teacher Summary</h6>
+        <!-- FIXED -->
+        <button class="btn btn-sm btn-outline-dark" onclick="printStudentReport()">
+          <i class="bi bi-printer"></i>
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>គ្រូ</th>
+              <th>សិស្ស</th>
+              <th>សរុប</th>
+              <th>២០%</th>
+            </tr>
+          </thead>
+          <tbody id="teacherBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
+  <!-- STUDENTS -->
   <div id="studentSection" class="container p-3" style="display:none;">
     <div class="bg-white p-3 rounded-3 shadow-sm">
-        <div class="d-flex justify-content-between mb-3">
-            <h5 class="fw-bold m-0">បញ្ជីឈ្មោះសិស្ស</h5>
-            <button id="addBtn" class="btn btn-primary btn-sm admin-only" onclick="openStudentModal()">+ បន្ថែមសិស្ស</button>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead><tr><th>ឈ្មោះ</th><th>ភេទ</th><th>គ្រូ</th><th>តម្លៃ</th><th class="admin-only">សកម្មភាព</th></tr></thead>
-                <tbody id="studentBody"></tbody>
-            </table>
-        </div>
+      <div class="d-flex justify-content-between mb-3">
+        <h5 class="fw-bold m-0">បញ្ជីឈ្មោះសិស្ស</h5>
+        <button class="btn btn-primary btn-sm admin-only" onclick="openStudentModal()">+ បន្ថែមសិស្ស</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ឈ្មោះ</th>
+              <th>ភេទ</th>
+              <th>គ្រូ</th>
+              <th>តម្លៃ</th>
+              <th class="admin-only">សកម្មភាព</th>
+            </tr>
+          </thead>
+          <tbody id="studentBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <button id="fabBtn" class="btn btn-primary fab-btn admin-only" onclick="openStudentModal()" 
-          style="position: fixed; bottom: 20px; right: 20px; border-radius: 50%; width: 50px; height: 50px;">
+  <!-- FAB -->
+  <button class="btn btn-primary admin-only"
+    style="position:fixed;bottom:20px;right:20px;border-radius:50%;width:50px;height:50px;"
+    onclick="openStudentModal()">
     <i class="bi bi-plus-lg"></i>
   </button>
 </div>
 
+<!-- MODAL (CRITICAL FIX: NOT EMPTY) -->
 <div class="modal fade" id="studentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Content loaded/used by JS -->
     </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="script.js"></script>
