@@ -318,7 +318,7 @@ function printReport() {
                     <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" alt="Logo">
                 </div>
                 <div class="school-info">
-                    <div class="school-kh">សាលារៀន ព្រះរាជអគ្គមហេសី</div>
+                    <div class="school-kh">សាលាឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</div>
                     <div style="font-weight: bold; font-size: 13px;">PREAH REACH AKK MOHESSEY</div>
                 </div>
             </div>
@@ -429,6 +429,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
