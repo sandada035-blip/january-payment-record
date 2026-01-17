@@ -232,16 +232,29 @@ function printReport(sectionId) {
 function printReport() {
     const printWindow = window.open('', '', 'height=900,width=1000');
     
-    // បង្កើតជួរដេកទិន្នន័យក្នុងតារាង
-    let tableRows = allStudents.map(r => `
-        <tr>
-            <td style="border: 1px solid black; padding: 8px; text-align: left;">${r[0]}</td>
-            <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[1]}</td>
-            <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[2]}</td>
-            <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[3]}</td>
-            <td style="border: 1px solid black; padding: 8px; text-align: right;">${r[4]}</td>
-        </tr>
-    `).join('');
+    // ១. គណនាទិន្នន័យសម្រាប់ Card សង្ខេប
+    let totalStudents = allStudents.length;
+    let totalFemale = allStudents.filter(s => s[1] === 'Female' || s[1] === 'ស្រី').length;
+    let totalFee = 0;
+    
+    // បង្កើតជួរដេកទិន្នន័យក្នុងតារាង និងគណនាទឹកប្រាក់សរុប
+    let tableRows = allStudents.map(r => {
+        let feeNum = parseInt(r[4].toString().replace(/[^0-9]/g, '')) || 0;
+        totalFee += feeNum;
+        
+        return `
+            <tr>
+                <td style="border: 1px solid black; padding: 8px; text-align: left;">${r[0]}</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[1]}</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[2]}</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center;">${r[3]}</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: right;">${r[4]}</td>
+            </tr>
+        `;
+    }).join('');
+
+    let fee80 = totalFee * 0.8;
+    let fee20 = totalFee * 0.2;
 
     const reportHTML = `
         <html>
@@ -249,122 +262,55 @@ function printReport() {
             <title>Student Report Print</title>
             <link href="https://fonts.googleapis.com/css2?family=Khmer+OS+Siemreap&family=Khmer+OS+Muol+Light&display=swap" rel="stylesheet">
             <style>
-                body { 
-                    font-family: 'Khmer OS Siemreap', sans-serif; 
-                    padding: 40px; 
-                    color: black; 
-                    background-color: white;
-                }
+                body { font-family: 'Khmer OS Siemreap', sans-serif; padding: 30px; color: black; background-color: white; }
                 
-                /* ផ្នែកក្បាលទំព័រ: Logo និង ឈ្មោះសាលា */
-                .top-header { 
-                    display: flex; 
-                    align-items: center; 
-                    justify-content: flex-start;
-                    margin-bottom: 30px; 
-                }
-                .logo-box { 
-                    width: 100px; 
-                    height: auto; 
-                    margin-right: 20px; 
-                }
-                .logo-box img { 
-                    width: 100%; 
-                    display: block;
-                }
-                .school-info {
-                    text-align: left;
-                }
-                .school-kh { 
-                    font-family: 'Khmer OS Muol Light'; 
-                    font-size: 16px; 
-                    margin-bottom: 5px;
-                }
-                .school-en { 
-                    font-family: 'Inter', sans-serif; 
-                    font-weight: bold; 
-                    font-size: 14px; 
-                }
+                .top-header { display: flex; align-items: center; margin-bottom: 20px; }
+                .logo-box { width: 90px; margin-right: 15px; }
+                .logo-box img { width: 100%; display: block; }
+                .school-kh { font-family: 'Khmer OS Muol Light'; font-size: 16px; }
+                .school-en { font-weight: bold; font-size: 14px; }
 
-                /* ចំណងជើងរបាយការណ៍ */
-                .report-header {
-                    text-align: center;
-                    margin-bottom: 30px;
-                }
-                .report-title { 
-                    font-family: 'Khmer OS Muol Light'; 
-                    font-size: 22px; 
-                    margin-bottom: 5px;
-                }
-                .report-subtitle { 
-                    font-weight: bold; 
-                    font-size: 18px; 
-                }
+                .report-header { text-align: center; margin-bottom: 20px; }
+                .report-title { font-family: 'Khmer OS Muol Light'; font-size: 20px; }
 
-                /* រចនាប័ទ្មតារាង */
-                table { 
-                    width: 100%; 
-                    border-collapse: collapse; 
-                    margin-bottom: 40px; 
+                /* រចនាប័ទ្ម Card សង្ខេបទិន្នន័យ */
+                .stats-container { 
+                    display: grid; 
+                    grid-template-columns: repeat(5, 1fr); 
+                    gap: 10px; 
+                    margin-bottom: 20px; 
                 }
-                th { 
-                    border: 1px solid black; 
-                    padding: 12px; 
-                    background-color: #f8f9fa; 
-                    font-family: 'Khmer OS Siemreap';
-                    font-weight: bold;
-                }
-                td {
-                    border: 1px solid black;
-                }
-                
-                /* ផ្នែកខាងក្រោម: កាលបរិច្ឆេទ និង ហត្ថលេខា */
-                .footer-container {
-                    width: 100%;
-                }
-                .date-section { 
-                    text-align: right; 
-                    font-size: 15px; 
-                    margin-bottom: 25px; 
-                    padding-right: 40px;
-                }
-                
-                .signature-wrapper { 
-                    display: flex; 
-                    justify-content: space-between; 
-                    padding: 0 50px; 
-                }
-                .sig-box { 
+                .stat-card { 
+                    border: 1px solid #333; 
+                    padding: 8px; 
                     text-align: center; 
-                    width: 250px; 
+                    border-radius: 5px;
                 }
-                .sig-role { 
-                    font-family: 'Khmer OS Muol Light'; 
-                    font-size: 15px; 
-                    margin-bottom: 80px; 
-                    line-height: 1.6;
-                }
-                .sig-line { 
-                    border-bottom: 1px dotted black; 
-                    width: 200px; 
-                    margin: 0 auto 10px; 
-                }
-                .sig-name { 
-                    font-family: 'Khmer OS Siemreap'; 
-                    font-weight: bold; 
-                    font-size: 15px;
-                }
+                .stat-label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 3px; }
+                .stat-value { font-size: 13px; font-weight: bold; color: black; }
+
+                table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                th { border: 1px solid black; padding: 10px; background-color: #f2f2f2; font-size: 13px; }
+                td { border: 1px solid black; font-size: 13px; }
+                
+                .footer-container { width: 100%; margin-top: 10px; }
+                .date-section { text-align: right; font-size: 14px; margin-bottom: 20px; padding-right: 40px; }
+                
+                .signature-wrapper { display: flex; justify-content: space-between; padding: 0 50px; }
+                .sig-box { text-align: center; width: 250px; }
+                .sig-role { font-family: 'Khmer OS Muol Light'; font-size: 13px; margin-bottom: 60px; }
+                .sig-line { border-bottom: 1px dotted black; width: 180px; margin: 0 auto 10px; }
+                .sig-name { font-weight: bold; font-size: 14px; }
 
                 @media print {
-                    body { padding: 20px; }
-                    button { display: none; }
+                    .stat-card { border: 1px solid black !important; -webkit-print-color-adjust: exact; }
                 }
             </style>
         </head>
         <body>
             <div class="top-header">
                 <div class="logo-box">
-                    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" alt="School Logo">
+                    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi33gP-LjadWAMAbW6z8mKj7NUYkZeslEJ4sVFw7WK3o9fQ-JTQFMWEe06xxew4lj7WKpfuk8fadTm5kXo3GSW9jNaQHE8SrCs8_bUFDV8y4TOJ1Zhbu0YKVnWIgL7sTPuEPMrmrtuNqwDPWKHOvy6PStAaSrCz-GpLfsQNyq-BAElq9EI3etjnYsft0Pvo" alt="Logo">
                 </div>
                 <div class="school-info">
                     <div class="school-kh">សាលារៀន ព្រះរាជអគ្គមហេសី</div>
@@ -374,17 +320,40 @@ function printReport() {
 
             <div class="report-header">
                 <div class="report-title">បញ្ជីឈ្មោះសិស្សរៀនបំប៉នបន្ថែម</div>
-                <div class="report-subtitle">Student Records</div>
+                <div style="font-weight: bold;">Student Records Summary</div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-label">សិស្សសរុប</div>
+                    <div class="stat-value">${totalStudents} នាក់</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">សរុបស្រី</div>
+                    <div class="stat-value">${totalFemale} នាក់</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">ទឹកប្រាក់សរុប</div>
+                    <div class="stat-value">${totalFee.toLocaleString()} ៛</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">ទឹកប្រាក់ ៨០%</div>
+                    <div class="stat-value">${fee80.toLocaleString()} ៛</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">ទឹកប្រាក់ ២០%</div>
+                    <div class="stat-value">${fee20.toLocaleString()} ៛</div>
+                </div>
             </div>
             
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 25%;">ឈ្មោះ</th>
-                        <th style="width: 10%;">ភេទ</th>
-                        <th style="width: 15%;">ថ្នាក់</th>
-                        <th style="width: 25%;">គ្រូ</th>
-                        <th style="width: 25%;">តម្លៃសិក្សា</th>
+                        <th>ឈ្មោះ</th>
+                        <th style="width: 80px;">ភេទ</th>
+                        <th style="width: 100px;">ថ្នាក់</th>
+                        <th>គ្រូ</th>
+                        <th style="width: 150px;">តម្លៃសិក្សា</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -402,7 +371,6 @@ function printReport() {
                         <div class="sig-role">បានពិនិត្យ និងឯកភាព<br>នាយកសាលា</div>
                         <div class="sig-line"></div>
                     </div>
-                    
                     <div class="sig-box">
                         <div class="sig-role">អ្នកចេញវិក្កយបត្រ</div>
                         <div class="sig-line"></div>
@@ -414,7 +382,6 @@ function printReport() {
             <script>
                 window.onload = function() { 
                     window.print(); 
-                    // បិទផ្ទាំង print វិញក្រោយពេលបោះពុម្ពរួច
                     setTimeout(function() { window.close(); }, 500);
                 };
             </script>
@@ -471,6 +438,7 @@ function printReceipt(index) {
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
 }
+
 
 
 
